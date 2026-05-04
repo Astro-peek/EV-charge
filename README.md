@@ -69,7 +69,7 @@ EV Charge OS is an AI-powered orchestration layer designed to solve the critical
    Create a `.env` file in the `backend` root:
    ```env
    ANTHROPIC_API_KEY=your_key
-   DATABASE_URL=postgresql://user:pass@localhost/evcharge
+   MONGODB_URI=mongodb://localhost:27017/evcharge
    REDIS_URL=redis://localhost:6379
    ```
 
