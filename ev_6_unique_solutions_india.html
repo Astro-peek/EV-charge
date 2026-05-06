@@ -1,0 +1,276 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.root { font-family: var(--font-sans); padding: 1.5rem 0; }
+.top-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.nav-btn { font-size: 12px; padding: 6px 14px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.nav-btn.active { background: var(--color-text-primary); color: var(--color-background-primary); border-color: var(--color-text-primary); }
+.card-main { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; display: none; }
+.card-main.active { display: block; }
+.card-head { padding: 20px 22px 16px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.problem-tag { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; font-weight: 500; }
+.card-title { font-size: 18px; font-weight: 500; color: var(--color-text-primary); line-height: 1.3; margin-bottom: 6px; }
+.card-tagline { font-size: 13px; color: var(--color-text-secondary); font-style: italic; }
+.card-body { padding: 20px 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.section-block { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px 16px; }
+.block-label { font-size: 11px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-text-tertiary); margin-bottom: 8px; }
+.block-text { font-size: 13px; color: var(--color-text-primary); line-height: 1.6; }
+.block-text li { margin-left: 14px; margin-bottom: 4px; }
+.full-width { grid-column: 1 / -1; }
+.pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.pill { font-size: 11px; padding: 3px 10px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); color: var(--color-text-secondary); background: var(--color-background-primary); }
+.viability-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.v-item { flex: 1; min-width: 100px; text-align: center; }
+.v-bar-wrap { height: 6px; background: var(--color-border-tertiary); border-radius: 3px; margin: 6px 0; }
+.v-bar { height: 6px; border-radius: 3px; }
+.v-label { font-size: 11px; color: var(--color-text-secondary); }
+.v-score { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-top: 2px; }
+.wow-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 5px 12px; border-radius: 20px; background: #EAF3DE; color: #27500A; font-weight: 500; margin-top: 10px; }
+.card-foot { padding: 14px 22px; border-top: 0.5px solid var(--color-border-tertiary); display: flex; justify-content: space-between; align-items: center; }
+.ask-btn { font-size: 13px; padding: 8px 18px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-primary); cursor: pointer; transition: background 0.15s; }
+.ask-btn:hover { background: var(--color-background-secondary); }
+.nav-counter { font-size: 12px; color: var(--color-text-tertiary); }
+</style>
+
+<div class="root">
+  <div class="top-nav" id="navRow"></div>
+  <div id="cards"></div>
+</div>
+
+<script>
+const solutions = [
+  {
+    num: 1,
+    problem: "No real-time slot visibility",
+    problemColor: "#FAECE7", problemText: "#993C1D",
+    title: "ChargeAnna — The Dukaan Model for Private Chargers",
+    tagline: "Turn every home charger, dhaba, petrol pump, and parking lot into a bookable charging slot",
+    idea: `Most solutions try to build NEW charger infrastructure. ChargeAnna flips this — it discovers and monetizes the HIDDEN network that already exists. India has millions of 15A/16A plug points in dhabas, small shops, petrol pumps, parking lots, and homes — none of them listed, none of them earning money. ChargeAnna is an Airbnb-style platform where any location owner registers their existing plug point as a "chargeable slot" and EV users book it on-demand. The owner gets paid per kWh consumed (metered via a ₹1,500 smart plug attachment). No new charger hardware needed. Owner just shares their existing electricity.`,
+    unique: [
+      "No startup has done peer-to-peer plug sharing at this scale in India",
+      "Leverages existing infrastructure — no new charger capex needed",
+      "Dhabas on highways become instant charging stops overnight",
+      "Works perfectly for e-scooters and e-rickshaws that need only 5A sockets"
+    ],
+    feasibility: [
+      "Smart meter plug costs ₹1,500 — owner invests once, earns passively",
+      "Owner pays electricity at ₹7/unit, charges EV user ₹14/unit — 2x margin",
+      "No DISCOM license needed (Ministry of Power 2022 circular exempts service providers)",
+      "UPI-based settlement — no cash, no friction"
+    ],
+    india: "Hindi/regional language owner onboarding via WhatsApp. Trust layer via Aadhaar-verified profiles. Insurance tie-up for electrical incidents. Works even in tier-3 towns where there is literally zero public infrastructure.",
+    stack: ["React Native app", "IoT smart plug (ESP32)", "UPI AutoPay", "OCPP lite", "WhatsApp Business API"],
+    viability: { economic: 88, technical: 75, social: 90, scale: 85 },
+    wow: "Dhabas on NH-44 become charging stations for Tata Nexon owners tonight",
+    askMore: "Explain the ChargeAnna peer-to-peer charger sharing model in detail — business model, tech stack and Indian regulatory angle"
+  },
+  {
+    num: 2,
+    problem: "Connector incompatibility confusion",
+    problemColor: "#E6F1FB", problemText: "#185FA5",
+    title: "VehicleID Protocol — One QR, Zero Confusion",
+    tagline: "Scan your vehicle's QR once. Every charger in India knows exactly what your car needs.",
+    idea: `Today users must know their connector type (CCS2? CHAdeMO? Bharat DC?), their max charge rate, and their battery capacity before walking up to a charger. Most don't. The solution: a national Vehicle Identity QR standard where every EV's RC book / registration gets a scannable QR linked to a central Vehicle Charging Profile (VCP) database. User walks to any charger, scans QR → charger auto-configures to right connector, right voltage, right speed. No app needed. No knowledge needed. Works even on 2G via SMS fallback. The locator app uses your registered vehicle profile to filter only compatible stations before you even leave home.`,
+    unique: [
+      "No one has proposed QR-on-RC as the universal compatibility layer in India",
+      "Works offline — QR contains encoded vehicle spec locally",
+      "Eliminates the need for users to understand charging jargon",
+      "Can be mandated by MoRTH as part of VAHAN database extension"
+    ],
+    feasibility: [
+      "QR generation costs zero — integrate with existing VAHAN/RC database",
+      "Charger-side QR reader is standard hardware already present",
+      "Pilot possible with Aadhaar/DigiLocker vehicle profile integration",
+      "Zero user cost — government mandates QR on new RC books"
+    ],
+    india: "India already has VAHAN vehicle database with 32 crore+ registrations. MoRTH + BEE partnership can make this a standard. Solves the exact confusion that illiterate or semi-literate e-rickshaw drivers face at charger stations.",
+    stack: ["QR with Base45 encoding", "VAHAN API integration", "OCPP 2.0 plug-and-charge", "DigiLocker vehicle profile", "SMS fallback API"],
+    viability: { economic: 92, technical: 70, social: 88, scale: 95 },
+    wow: "An e-rickshaw driver in Patna with zero EV knowledge just scans and charges correctly — first time, every time",
+    askMore: "Design the VehicleID QR Protocol system for Indian EVs — how would VAHAN integration and charger auto-configuration work technically"
+  },
+  {
+    num: 3,
+    problem: "Range anxiety on highways",
+    problemColor: "#EAF3DE", problemText: "#3B6D11",
+    title: "ChargeSaathi — The IRCTC of Highway EV Travel",
+    tagline: "Pre-book your entire highway charging journey like a train ticket — slot, time, station, and backup",
+    idea: `When you book a train on IRCTC, your entire journey is pre-confirmed. ChargeSaathi does the same for highway EV trips. User enters source + destination + departure time. The system calculates exact charge stops based on vehicle range, current battery %, weather (heat reduces range in India), and traffic. It then auto-books slots at each stop along the route — like a multi-leg train reservation. If a charger goes down, the system auto-reroutes and re-books the next available slot at a nearby station. Crucially, it integrates with NHAI highway data to know which stations have current outages.`,
+    unique: [
+      "No existing app does end-to-end multi-stop pre-booking for highway travel",
+      "Weather-adjusted range calculation (Indian summer reduces EV range 15-25%)",
+      "NHAI API integration for real highway charger status — never done before",
+      "Auto-rebook on failure — like flight rebooking but for charging"
+    ],
+    feasibility: [
+      "NHAI has a public data API — can be integrated legally",
+      "Revenue via ₹15-25 convenience fee per trip booking",
+      "Works with existing charger networks via OCPP — no new hardware",
+      "Partnership model: charge networks pay for priority listing + guaranteed bookings"
+    ],
+    india: "Addresses the #1 fear of Indian EV buyers: 'what if I get stranded on the highway?' Specifically designed for Delhi-Jaipur, Mumbai-Pune, Bengaluru-Mysuru corridors where EV traffic is highest. Hindi trip summary SMS sent to family — a trust feature Indian users need.",
+    stack: ["Google Maps Directions API", "OpenWeatherMap API", "NHAI open data", "OCPP booking layer", "SMS gateway for trip summary"],
+    viability: { economic: 85, technical: 78, social: 92, scale: 82 },
+    wow: "Book Delhi→Jaipur EV trip with 2 pre-reserved charge stops in 30 seconds. Family gets SMS update at each stop.",
+    askMore: "Design the ChargeSaathi highway trip booking system — route algorithm, range calculation with Indian weather, and OCPP booking flow"
+  },
+  {
+    num: 4,
+    problem: "No broken charger reporting",
+    problemColor: "#FAEEDA", problemText: "#854F0B",
+    title: "TrustCharge Score — Aadhaar-Verified Community Audit Network",
+    tagline: "Gamified, fraud-proof crowdsourced charger health monitoring — verified by actual charge events",
+    idea: `Existing review systems (like Google Maps) are gamed easily. TrustCharge creates a verified audit network where ONLY users who actually completed a charge session at a station can rate it. The rating is auto-triggered post-charge via the app — no manual action. Each station gets a live TrustCharge Score (0-100) updated in real time. Crucially, if 3+ users report a charger as broken in 4 hours, the system auto-notifies the CPO AND sends a field agent job request to a nearby verified "ChargeMitra" (trained local technician, like Ola auto driver network) to inspect and fix it. Broken charger reports earn the user 50 "ChargeCoins" — redeemable for free kWh.`,
+    unique: [
+      "Charge-event-verified reviews — impossible to fake without actually charging",
+      "Auto-dispatch to field technician network (like Urban Company for EV repair)",
+      "CPO receives SLA penalty if charger stays broken beyond 6 hours",
+      "ChargeCoins gamification drives reporting behaviour organically"
+    ],
+    feasibility: [
+      "Zero additional hardware — works via existing OCPP session data",
+      "ChargeMitra technicians earn ₹200-500 per inspection gig — creates jobs",
+      "CPO SLA penalty model creates B2B revenue stream for platform",
+      "Review data can be sold as analytics to CPOs, insurers, and DISCOM planners"
+    ],
+    india: "Creates livelihoods for semi-skilled technicians in each city — very aligned with PM Vishwakarma scheme. Works in areas where CPOs have no local presence. Solves India's 60% non-operational charger crisis through community accountability rather than corporate SLAs.",
+    stack: ["OCPP session event hooks", "Push notification engine", "Gig worker app (React Native)", "ChargeCoins ledger", "CPO SLA dashboard"],
+    viability: { economic: 90, technical: 72, social: 85, scale: 88 },
+    wow: "A charger breaks in Nagpur at 9am. By 11am, 3 users reported it, a ChargeMitra has been dispatched, and the CPO has received an SLA warning — all automated.",
+    askMore: "Design the TrustCharge verified review and ChargeMitra dispatch system — how does the OCPP event hook work and how is the gig network structured"
+  },
+  {
+    num: 5,
+    problem: "No grid/power cut awareness",
+    problemColor: "#F1EFE8", problemText: "#444441",
+    title: "GridSense — India's First DISCOM-Linked Charge Planner",
+    tagline: "Know before you drive — which stations have live power right now, and when they will",
+    idea: `India has 42 major DISCOMs (distribution companies) and most have digitized load-shedding schedules available online. GridSense scrapes, parses, and maps these schedules against every registered charging station's location. Result: the app shows each station in GREEN (live power), YELLOW (intermittent / risky), or RED (scheduled outage) at any given hour. For stations without DISCOM data, it uses crowdsourced "power status pings" — users at the station ping live power status with a single tap. This is a UNIQUELY Indian problem — no app in the world has built this because no other major EV market has India's scale of load shedding.`,
+    unique: [
+      "No app in India or globally has DISCOM outage → charger status mapping",
+      "Gives users advance notice to charge at home before an outage hits their area",
+      "Helps CPOs schedule maintenance during planned outages (not during peak hours)",
+      "Crowd-ping fallback works even where DISCOM data is unavailable"
+    ],
+    feasibility: [
+      "DISCOM schedule data is publicly available — scraping is legal for personal use",
+      "API partnerships with state electricity boards are achievable with a govt letter",
+      "Power status ping takes 1 tap — frictionless UX ensures adoption",
+      "Weather + season data improves prediction (summer = more cuts in some states)"
+    ],
+    india: "Utterly essential for UP, Bihar, MP, Odisha, Rajasthan — states with heavy EV 3W adoption AND significant load shedding. DISCOM scraping works even with India's fragmented state-wise electricity governance. SMS alert: 'Your area has scheduled cut 6-9pm, charge before 5pm.'",
+    stack: ["Python DISCOM scraper (42 DISCOMs)", "NLP for unstructured outage PDFs", "GeoDB charger-to-circuit mapping", "Push/SMS alert engine", "Crowd-ping API"],
+    viability: { economic: 82, technical: 80, social: 95, scale: 78 },
+    wow: "1.2 crore EV users in UP get notified every morning: which stations near them have stable power today. The first app in the world to solve this.",
+    askMore: "Design the GridSense DISCOM integration system — how to scrape and parse load shedding schedules and map them to EV charger locations"
+  },
+  {
+    num: 6,
+    problem: "2W/3W EVs ignored by platforms",
+    problemColor: "#EEEDFE", problemText: "#534AB7",
+    title: "ReChakra — The First Super-App Built for E-Rickshaw Drivers",
+    tagline: "Charging locator + income tracker + battery health monitor — built entirely for Bharat's e-rickshaw economy",
+    idea: `90% of India's EV charging apps are designed for car owners — Tata Nexon, MG ZS. But India's real EV revolution is 1.5 crore e-rickshaws and e-scooters. These drivers earn ₹500-1,000/day, often can't read English, share vehicles, have no smartphone data plan, and use basic AC charging with any available socket. ReChakra is built exclusively for them: voice-first interface in Bhindi/Bhojpuri/regional language, shows only 5A/15A compatible charge points (homes, dhabas, shops willing to sell power), shows cheapest charging rate near current location, tracks daily income vs charging cost ratio, and predicts battery degradation based on charge cycles. Monetization: ₹29/month subscription from fleet owners who manage 10+ rickshaws.`,
+    unique: [
+      "Zero apps exist targeting e-rickshaw drivers specifically — massive underserved segment",
+      "Voice-first in Bhojpuri, Maithili, Awadhi — not just Hindi",
+      "Income-to-charge-cost ratio tracking is a first in any EV app globally",
+      "Shared vehicle profile — multiple drivers, one vehicle, split charge history"
+    ],
+    feasibility: [
+      "E-rickshaw market: 15 lakh+ registered, 50 lakh+ estimated on road",
+      "₹29/month fleet subscription across 10 vehicles = ₹290/fleet owner/month",
+      "Voice UI reduces literacy barrier — works on basic Android phones",
+      "Low data usage — SMS fallback for charge point lookup costs nothing"
+    ],
+    india: "Entirely designed around the informal economy. Partners with e-rickshaw unions (like Delhi Auto Rickshaw Sangh) for distribution. Battery health alerts in local language save ₹50,000+ battery replacement costs. Financial inclusion angle: integrates with Jan Dhan UPI for payment. Genuinely Bharat-first.",
+    stack: ["Voice interface (Bhashini API — GoI's free Indic NLP)", "SMS USSD fallback", "Jan Dhan UPI integration", "Battery cycle ML model", "WhatsApp Bot for fleet owners"],
+    viability: { economic: 86, technical: 68, social: 98, scale: 90 },
+    wow: "A Bhojpuri-speaking e-rickshaw driver in Varanasi finds the cheapest charging point near Dashashwamedh Ghat using voice — in his own dialect. Zero English. Zero data plan needed.",
+    askMore: "Design ReChakra — the e-rickshaw driver super-app with Bhashini voice API integration, battery health prediction, and Jan Dhan UPI payment flow"
+  }
+];
+
+function renderViability(v) {
+  const items = [
+    { label: "Economic", score: v.economic },
+    { label: "Technical", score: v.technical },
+    { label: "Social impact", score: v.social },
+    { label: "Scalability", score: v.scale }
+  ];
+  const colors = ["#1D9E75","#185FA5","#D85A30","#7F77DD"];
+  return items.map((it, i) => `
+    <div class="v-item">
+      <div class="v-score">${it.score}%</div>
+      <div class="v-bar-wrap"><div class="v-bar" style="width:${it.score}%;background:${colors[i]}"></div></div>
+      <div class="v-label">${it.label}</div>
+    </div>
+  `).join('');
+}
+
+function renderCard(s) {
+  return `
+  <div class="card-main ${s.num === 1 ? 'active' : ''}" id="card-${s.num}">
+    <div class="card-head">
+      <div class="problem-tag" style="background:${s.problemColor};color:${s.problemText}">Problem ${s.num}: ${s.problem}</div>
+      <div class="card-title">${s.title}</div>
+      <div class="card-tagline">"${s.tagline}"</div>
+    </div>
+    <div class="card-body">
+      <div class="section-block full-width">
+        <div class="block-label">The Core Idea</div>
+        <div class="block-text">${s.idea}</div>
+      </div>
+      <div class="section-block">
+        <div class="block-label">What makes it unique</div>
+        <div class="block-text"><ul>${s.unique.map(u => `<li>${u}</li>`).join('')}</ul></div>
+      </div>
+      <div class="section-block">
+        <div class="block-label">Economic feasibility</div>
+        <div class="block-text"><ul>${s.feasibility.map(f => `<li>${f}</li>`).join('')}</ul></div>
+      </div>
+      <div class="section-block full-width">
+        <div class="block-label">Why it works specifically for India</div>
+        <div class="block-text">${s.india}</div>
+      </div>
+      <div class="section-block">
+        <div class="block-label">Viability scores</div>
+        <div class="viability-row">${renderViability(s.viability)}</div>
+      </div>
+      <div class="section-block">
+        <div class="block-label">Tech stack</div>
+        <div class="block-text">
+          <div class="pill-row">${s.stack.map(t => `<span class="pill">${t}</span>`).join('')}</div>
+        </div>
+      </div>
+      <div class="section-block full-width">
+        <div class="block-label">The "wow" moment for judges</div>
+        <div class="block-text"><strong>${s.wow}</strong></div>
+        <div class="wow-badge">High originality</div>
+      </div>
+    </div>
+    <div class="card-foot">
+      <span class="nav-counter">Solution ${s.num} of ${solutions.length}</span>
+      <button class="ask-btn" onclick="sendPrompt('${s.askMore}')">Go deeper on this ↗</button>
+    </div>
+  </div>
+  `;
+}
+
+const navRow = document.getElementById('navRow');
+const cardsDiv = document.getElementById('cards');
+
+solutions.forEach(s => {
+  const btn = document.createElement('button');
+  btn.className = 'nav-btn' + (s.num === 1 ? ' active' : '');
+  btn.textContent = `${s.num}. ${s.title.split('—')[0].trim()}`;
+  btn.onclick = () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.card-main').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('card-' + s.num).classList.add('active');
+  };
+  navRow.appendChild(btn);
+  cardsDiv.innerHTML += renderCard(s);
+});
+</script>

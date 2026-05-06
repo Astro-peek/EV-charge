@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["public", "auth"]
+}
+
+model Station {
+  id              String    @id @default(uuid())
+  name            String
+  address         String?
+  lat             Float?
+  lng             Float?
+  type            String?   // AC, DC, Both
+  power           String?   @default("15kW")
+  status          String?   @default("available")
+  price_per_unit  Float
+  connector_types String[]
+  host_id         String?   // Supabase Auth UID
+  images          String[]
+  bookings        Booking[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("stations")
+  @@schema("public")
+}
+
+model Booking {
+  id              String   @id @default(uuid())
+  user_id         String   // Supabase Auth UID
+  station         Station  @relation(fields: [station_id], references: [id])
+  station_id      String
+  start_time      DateTime
+  end_time        DateTime
+  status          String   @default("pending") // pending, active, completed, cancelled
+  total_amount    Float?
+  units_consumed  Float?   @default(0)
+  payment_id      String?
+  vehicle_id      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("bookings")
+  @@schema("public")
+}
+
+model User {
+  id    String @id
+  @@map("users")
+  @@schema("auth")
+}

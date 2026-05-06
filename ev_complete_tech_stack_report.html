@@ -1,0 +1,672 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;500;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0e1a;--surface:#111827;--surface2:#1a2235;--border:#1e2d47;
+  --accent:#00d4ff;--accent2:#7c3aed;--accent3:#10b981;--accent4:#f59e0b;--accent5:#f43f5e;
+  --text:#e2e8f0;--muted:#64748b;--mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);}
+.root{padding:0 0 3rem;}
+
+/* HEADER */
+.hero{padding:2.5rem 2rem 2rem;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(0,212,255,0.08) 0%,transparent 70%);}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;padding:4px 12px;border:1px solid var(--accent);color:var(--accent);border-radius:4px;margin-bottom:12px;}
+.hero-badge::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.hero-title{font-size:26px;font-weight:800;line-height:1.2;margin-bottom:8px;}
+.hero-title span{color:var(--accent);}
+.hero-sub{font-size:13px;color:var(--muted);line-height:1.6;max-width:600px;}
+.meta-row{display:flex;gap:20px;margin-top:16px;flex-wrap:wrap;}
+.meta-chip{font-family:var(--mono);font-size:11px;padding:4px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--muted);}
+.meta-chip span{color:var(--text);}
+
+/* NAV */
+.nav-tabs{display:flex;gap:2px;padding:12px 2rem 0;border-bottom:1px solid var(--border);overflow-x:auto;}
+.tab{font-family:var(--mono);font-size:11px;padding:8px 16px;cursor:pointer;border-radius:6px 6px 0 0;color:var(--muted);border:1px solid transparent;border-bottom:none;white-space:nowrap;transition:all 0.15s;}
+.tab.active{background:var(--surface);color:var(--accent);border-color:var(--border);border-bottom-color:var(--surface);}
+.tab:hover:not(.active){color:var(--text);}
+
+/* SECTIONS */
+.section{display:none;padding:2rem;}
+.section.active{display:block;}
+.section-title{font-size:16px;font-weight:700;margin-bottom:1.5rem;display:flex;align-items:center;gap:10px;}
+.section-title::before{content:'';display:block;width:3px;height:20px;background:var(--accent);border-radius:2px;}
+
+/* ARCHITECTURE OVERVIEW */
+.arch-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:2rem;}
+.arch-layer{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;}
+.arch-layer-label{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;}
+.arch-item{font-size:12px;padding:6px 10px;background:var(--surface2);border-radius:6px;margin-bottom:6px;border-left:3px solid transparent;color:var(--text);}
+.arch-item.blue{border-left-color:var(--accent);}
+.arch-item.purple{border-left-color:var(--accent2);}
+.arch-item.green{border-left-color:var(--accent3);}
+.arch-item.amber{border-left-color:var(--accent4);}
+.arch-item.red{border-left-color:var(--accent5);}
+.arch-item .tag{font-family:var(--mono);font-size:9px;float:right;color:var(--muted);}
+
+/* AGENT CARDS */
+.agent-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.agent-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color 0.15s;cursor:pointer;}
+.agent-card:hover{border-color:var(--accent);}
+.agent-header{padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;}
+.agent-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.agent-name{font-size:13px;font-weight:700;margin-bottom:2px;}
+.agent-role{font-family:var(--mono);font-size:10px;color:var(--muted);}
+.agent-body{padding:12px 16px;}
+.agent-triggers{margin-bottom:10px;}
+.trigger-label{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;}
+.trigger-item{font-size:11px;color:var(--text);padding:3px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;}
+.trigger-item::before{content:'→';color:var(--accent);font-size:10px;}
+.tools-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+.tool-chip{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:3px;background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);color:var(--accent);}
+.tool-chip.purple{background:rgba(124,58,237,0.1);border-color:rgba(124,58,237,0.3);color:#a78bfa;}
+.tool-chip.green{background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.3);color:#34d399;}
+.tool-chip.amber{background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.3);color:#fbbf24;}
+
+/* MCP TABLE */
+.mcp-table{width:100%;border-collapse:collapse;font-size:12px;}
+.mcp-table th{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);text-align:left;padding:8px 12px;border-bottom:1px solid var(--border);}
+.mcp-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+.mcp-table tr:last-child td{border-bottom:none;}
+.mcp-table tr:hover td{background:var(--surface2);}
+.mcp-name{font-weight:700;color:var(--accent);margin-bottom:2px;font-family:var(--mono);}
+.mcp-source{font-size:10px;color:var(--muted);}
+.status-badge{display:inline-block;font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:3px;}
+.status-exists{background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.3);}
+.status-build{background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);}
+.status-free{background:rgba(0,212,255,0.1);color:var(--accent);border:1px solid rgba(0,212,255,0.25);}
+.used-in{display:flex;flex-wrap:wrap;gap:3px;}
+.sol-dot{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;}
+
+/* SOLUTION MATRIX */
+.matrix-header{display:grid;grid-template-columns:180px repeat(6,1fr);gap:4px;margin-bottom:4px;}
+.matrix-col-label{font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;padding:6px 4px;background:var(--surface);border-radius:4px;}
+.matrix-row{display:grid;grid-template-columns:180px repeat(6,1fr);gap:4px;margin-bottom:4px;}
+.matrix-row-label{font-size:11px;padding:8px 10px;background:var(--surface);border-radius:4px;display:flex;align-items:center;}
+.matrix-cell{border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;padding:8px 4px;text-align:center;}
+.cell-primary{background:rgba(0,212,255,0.15);color:var(--accent);border:1px solid rgba(0,212,255,0.3);font-weight:700;}
+.cell-secondary{background:rgba(124,58,237,0.1);color:#a78bfa;border:1px solid rgba(124,58,237,0.2);}
+.cell-none{background:var(--surface);color:var(--border);}
+
+/* PIPELINE */
+.pipeline{margin-bottom:2rem;}
+.pipe-title{font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text);display:flex;align-items:center;gap:8px;}
+.pipe-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;}
+.pipe-flow{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding-bottom:4px;}
+.pipe-step{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;min-width:150px;flex-shrink:0;position:relative;}
+.pipe-step::after{content:'→';position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;z-index:1;}
+.pipe-step:last-child::after{display:none;}
+.pipe-step-title{font-size:11px;font-weight:700;margin-bottom:3px;}
+.pipe-step-agent{font-family:var(--mono);font-size:9px;color:var(--accent);margin-bottom:3px;}
+.pipe-step-detail{font-size:10px;color:var(--muted);line-height:1.4;}
+.pipe-connector{width:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:16px;}
+
+/* CODE BLOCK */
+.code-block{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:var(--mono);font-size:11px;line-height:1.7;overflow-x:auto;margin-bottom:16px;}
+.code-comment{color:var(--muted);}
+.code-key{color:var(--accent);}
+.code-val{color:#a78bfa;}
+.code-str{color:#34d399;}
+.code-fn{color:var(--accent4);}
+
+/* COST TABLE */
+.cost-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:2rem;}
+.cost-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.cost-title{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;}
+.cost-item{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.cost-item:last-child{border-bottom:none;}
+.cost-amt{font-family:var(--mono);font-weight:700;}
+.cost-free{color:var(--accent3);}
+.cost-paid{color:var(--accent4);}
+.cost-total{font-size:14px;font-weight:800;color:var(--accent);margin-top:10px;padding-top:10px;border-top:1px solid var(--accent);display:flex;justify-content:space-between;}
+</style>
+
+<div class="root">
+<div class="hero">
+  <div class="hero-badge">LIVE DOCUMENT</div>
+  <div class="hero-title">EV Charge OS — <span>Complete AI Tech Stack</span></div>
+  <div class="hero-sub">Full architecture for all 6 solutions: AI agents, MCP servers, automation pipelines, and zero-human-interaction flows. Built for Indian conditions.</div>
+  <div class="meta-row">
+    <div class="meta-chip">Solutions: <span>6</span></div>
+    <div class="meta-chip">AI Agents: <span>9</span></div>
+    <div class="meta-chip">MCP Servers: <span>11</span></div>
+    <div class="meta-chip">Human touchpoints: <span>~0</span></div>
+    <div class="meta-chip">Core model: <span>Claude Sonnet 4</span></div>
+  </div>
+</div>
+
+<div class="nav-tabs">
+  <div class="tab active" onclick="showTab('arch')">01. Architecture</div>
+  <div class="tab" onclick="showTab('agents')">02. AI Agents</div>
+  <div class="tab" onclick="showTab('mcp')">03. MCP Servers</div>
+  <div class="tab" onclick="showTab('pipelines')">04. Automation Pipelines</div>
+  <div class="tab" onclick="showTab('matrix')">05. Feature Matrix</div>
+  <div class="tab" onclick="showTab('cost')">06. Cost & Stack</div>
+</div>
+
+<!-- TAB 1: ARCHITECTURE -->
+<div class="section active" id="tab-arch">
+  <div class="section-title">System Architecture Overview</div>
+  <div class="arch-grid">
+    <div class="arch-layer">
+      <div class="arch-layer-label">Frontend / User Layer</div>
+      <div class="arch-item blue">React Native App (iOS + Android) <span class="tag">PRIMARY</span></div>
+      <div class="arch-item blue">WhatsApp Bot (Twilio/Meta API) <span class="tag">2W/3W</span></div>
+      <div class="arch-item blue">USSD/SMS Interface <span class="tag">NO-DATA</span></div>
+      <div class="arch-item blue">Voice UI — Bhashini ASR+TTS <span class="tag">BHARAT</span></div>
+      <div class="arch-item blue">PWA Web App <span class="tag">BACKUP</span></div>
+    </div>
+    <div class="arch-layer">
+      <div class="arch-layer-label">AI Agent Orchestration Layer</div>
+      <div class="arch-item purple">Master Orchestrator Agent (Claude) <span class="tag">BRAIN</span></div>
+      <div class="arch-item purple">ChargeLocator Agent <span class="tag">S1+S3</span></div>
+      <div class="arch-item purple">TripPlanner Agent <span class="tag">S3</span></div>
+      <div class="arch-item purple">GridSense Agent <span class="tag">S5</span></div>
+      <div class="arch-item purple">TrustAudit Agent <span class="tag">S4</span></div>
+      <div class="arch-item purple">ReChakra Voice Agent <span class="tag">S6</span></div>
+      <div class="arch-item purple">PeerCharge Matcher Agent <span class="tag">S1</span></div>
+      <div class="arch-item purple">CPO Ops Agent <span class="tag">OPERATOR</span></div>
+      <div class="arch-item purple">Analytics Agent <span class="tag">INSIGHT</span></div>
+    </div>
+    <div class="arch-layer">
+      <div class="arch-layer-label">MCP + External Services Layer</div>
+      <div class="arch-item green">Google Maps MCP <span class="tag">LOCATION</span></div>
+      <div class="arch-item green">OCPP Charger MCP (custom) <span class="tag">HARDWARE</span></div>
+      <div class="arch-item green">DISCOM Scraper MCP (custom) <span class="tag">GRID</span></div>
+      <div class="arch-item green">VAHAN Vehicle DB MCP (custom) <span class="tag">VEHICLE</span></div>
+      <div class="arch-item green">Razorpay/UPI MCP <span class="tag">PAYMENT</span></div>
+      <div class="arch-item green">Bhashini NLP MCP (custom) <span class="tag">VOICE</span></div>
+      <div class="arch-item green">Twilio SMS/WhatsApp MCP <span class="tag">NOTIFY</span></div>
+      <div class="arch-item green">OpenWeatherMap MCP <span class="tag">RANGE</span></div>
+      <div class="arch-item green">IoT Smart Plug MCP (custom) <span class="tag">P2P</span></div>
+      <div class="arch-item green">Firebase Push MCP <span class="tag">ALERTS</span></div>
+      <div class="arch-item green">PostHog Analytics MCP <span class="tag">DATA</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">Data & Backend Layer</div>
+  <div class="arch-grid">
+    <div class="arch-layer">
+      <div class="arch-layer-label">Core Databases</div>
+      <div class="arch-item amber">PostgreSQL + PostGIS (geospatial) <span class="tag">PRIMARY DB</span></div>
+      <div class="arch-item amber">Redis (real-time slot state) <span class="tag">CACHE</span></div>
+      <div class="arch-item amber">TimescaleDB (charger telemetry) <span class="tag">TIMESERIES</span></div>
+      <div class="arch-item amber">Pinecone (vehicle embedding search) <span class="tag">VECTOR</span></div>
+    </div>
+    <div class="arch-layer">
+      <div class="arch-layer-label">Backend Services</div>
+      <div class="arch-item red">FastAPI (Python) — Agent API gateway <span class="tag">CORE</span></div>
+      <div class="arch-item red">Node.js — OCPP WebSocket server <span class="tag">CHARGER</span></div>
+      <div class="arch-item red">Celery + Redis — Async task queue <span class="tag">JOBS</span></div>
+      <div class="arch-item red">MQTT Broker (Mosquitto) — IoT comms <span class="tag">IOT</span></div>
+    </div>
+    <div class="arch-layer">
+      <div class="arch-layer-label">AI / ML Models</div>
+      <div class="arch-item blue">Claude Sonnet 4 — All agents <span class="tag">PRIMARY LLM</span></div>
+      <div class="arch-item blue">Bhashini ASR — 22 Indian languages <span class="tag">VOICE</span></div>
+      <div class="arch-item blue">ML range model (weather+battery) <span class="tag">SKLEARN</span></div>
+      <div class="arch-item blue">Anomaly detector (broken charger) <span class="tag">ISOLATION FOREST</span></div>
+      <div class="arch-item blue">Demand heatmap (XGBoost) <span class="tag">PREDICT</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 2: AGENTS -->
+<div class="section" id="tab-agents">
+  <div class="section-title">AI Agent Definitions — 9 Autonomous Agents</div>
+  <div class="agent-grid">
+
+    <div class="agent-card" onclick="sendPrompt('How do I implement the Master Orchestrator Agent using Claude API for the EV charging app?')">
+      <div class="agent-header">
+        <div class="agent-icon" style="background:rgba(0,212,255,0.15);color:var(--accent)">◈</div>
+        <div><div class="agent-name">Master Orchestrator</div><div class="agent-role">agent/orchestrator — routes all user intents</div></div>
+      </div>
+      <div class="agent-body">
+        <div class="trigger-label">Auto-triggers</div>
+        <div class="trigger-item">Any user query → classify intent → dispatch sub-agent</div>
+        <div class="trigger-item">Multi-step requests → create agent chain automatically</div>
+        <div class="trigger-item">Fallback on sub-agent failure → retry with alternate path</div>
+        <div class="tools-row">
+          <span class="tool-chip">Claude tool_use</span>
+          <span class="tool-chip">Intent classifier</span>
+          <span class="tool-chip purple">Session state</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="agent-card" onclick="sendPrompt('How to build the ChargeLocator AI Agent with Google Maps MCP and OCPP integration?')">
+      <div class="agent-header">
+        <div class="agent-icon" style="background:rgba(16,185,129,0.15);color:#34d399">⬡</div>
+        <div><div class="agent-name">ChargeLocator Agent</div><div class="agent-role">agent/locator — real-time station discovery</div></div>
+      </div>
+      <div class="agent-body">
+        <div class="trigger-label">Auto-triggers</div>
+        <div class="trigger-item">User opens app → fetch nearby stations via Maps MCP</div>
+        <div class="trigger-item">GPS moves 500m → background refresh stations</div>
+        <div class="trigger-item">Vehicle QR scan → filter by compatibility automatically</div>
+        <div class="tools-row">
+          <span class="tool-chip">Google Maps MCP</span>
+          <span class="tool-chip green">OCPP MCP</span>
+          <span class="tool-chip green">VAHAN MCP</span>
+          <span class="tool-chip">PostGIS query</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="agent-card" onclick="sendPrompt('Design the TripPlanner Agent for highway EV route planning with auto slot booking')">
+      <div class="agent-header">
+        <div class="agent-icon" style="background:rgba(124,58,237,0.15);color:#a78bfa">⤳</div>
+        <div><div class="agent-name">TripPlanner Agent</div><div class="agent-role">agent/trip — highway multi-stop booking</div></div>
+      </div>
+      <div class="agent-body">
+        <div class="trigger-label">Auto-triggers</div>
+        <div class="trigger-item">User inputs destination → auto-calculate charge stops</div>
+        <div class="trigger-item">Weather API hot → reduce range estimate by 18%</div>
+        <div class="trigger-item">Booked station goes down → auto-rebook nearest slot</div>
+        <div class="tools-row">
+          <span class="tool-chip">Maps Directions</span>
+          <span class="tool-chip amber">WeatherMap MCP</span>
+          <span class="tool-chip">OCPP booking</span>
+          <span class="tool-chip purple">NHAI data</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="agent-card" onclick="sendPrompt('Build the GridSense Agent that scrapes DISCOM load shedding data and maps it to charging stations')">
+      <div class="agent-header">
+        <div class="agent-icon" style="background:rgba(245,158,11,0.15);color:#fbbf24">⚡</div>
+        <div><div class="agent-name">GridSense Agent</div><div class="agent-role">agent/grid — power cut awareness system</div></div>
+      </div>
+      <div class="agent-body">
+        <div class="trigger-label">Auto-triggers</div>
+        <div class="trigger-item">Every 2h → scrape 42 DISCOM outage schedules</div>
+        <div class="trigger-item">New outage detected → mark affected stations RED</div>
+        <div class="trigger-item">User books station in cut zone → auto-warn + suggest alt</div>
+        <div class="tools-row">
+          <span class="tool-chip amber">DISCOM MCP</span>
+          <span class="tool-chip">Puppeteer scraper</span>
+          <span class="tool-chip">NLP PDF parser</span>
+          <span class="tool-chip green">Firebase alerts</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="agent-card" onclick="sendPrompt('Design the TrustAudit Agent for verified charger reviews and ChargeMitra dispatch system')">
+      <div class="agent-header">
+        <div class="agent-icon" style="background:rgba(244,63,94,0.15);color:#fb7185">◎</div>
+        <div><div class="agent-name">TrustAudit Agent</div><div class="agent-role">agent/trust — charger health + dispatch</div></div>
+      </div>
+      <div class="agent-body">
+        <div class="trigger-label">Auto-triggers</div>
+        <div class="trigger-item">OCPP session ends → auto-trigger verified review prompt</div>
+        <div class="trigger-item">3 failures in 4h → classify charger broken, dispatch ChargeMitra</div>
+        <div class="trigger-item">CPO SLA breach → auto-send penalty notification</div>
+        <div class="tools-row">
+          <span class="tool-chip red">OCPP event hook</span>
+          <span class="tool-chip">Anomaly ML</span>
+          <span class="tool-chip purple">Gig worker API</span>
+          <span class="tool-chip">Twilio SMS</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="agent-card" onclick="sendPrompt('How to build ReChakra Voice Agent using Bhashini API for e-rickshaw drivers in Indian regional languages?')">
+      <div class="agent-header">
+        <div class="agent-icon" style="background:rgba(16,185,129,0.15);color:#34d399">🔊</div>
+        <div><div class="agent-name">ReChakra Voice Agent</div><div class="agent-role">agent/voice — Bhojpuri/Hindi first UI</div></div>
+      </div>
+      <div class="agent-body">
+        <div class="trigger-label">Auto-triggers</div>
+        <div class="trigger-item">Voice input → Bhashini ASR → translate to intent</div>
+        <div class="trigger-item">Battery % low → proactive voice alert in user's dialect</div>
+        <div class="trigger-item">End of day → auto-generate income vs charge cost report</div>
+        <div class="tools-row">
+          <span class="tool-chip green">Bhashini MCP</span>
+          <span class="tool-chip">VoicERA stack</span>
+          <span class="tool-chip amber">Jan Dhan UPI</span>
+          <span class="tool-chip">MQTT IoT</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="agent-card" onclick="sendPrompt('Design the PeerCharge Matcher Agent that matches EV users to nearby private socket owners like Airbnb')">
+      <div class="agent-header">
+        <div class="agent-icon" style="background:rgba(0,212,255,0.15);color:var(--accent)">⇄</div>
+        <div><div class="agent-name">PeerCharge Matcher</div><div class="agent-role">agent/p2p — socket owner ↔ EV user matching</div></div>
+      </div>
+      <div class="agent-body">
+        <div class="trigger-label">Auto-triggers</div>
+        <div class="trigger-item">No public charger in 2km → search peer sockets nearby</div>
+        <div class="trigger-item">Owner goes online → notify waitlisted EV users instantly</div>
+        <div class="trigger-item">kWh consumed → auto-calculate bill, trigger UPI payment</div>
+        <div class="tools-row">
+          <span class="tool-chip">IoT Plug MCP</span>
+          <span class="tool-chip purple">MQTT metering</span>
+          <span class="tool-chip">Razorpay MCP</span>
+          <span class="tool-chip green">WhatsApp MCP</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="agent-card" onclick="sendPrompt('Design the CPO Ops Agent that auto-manages charging station operators dashboard, alerts, and SLA tracking')">
+      <div class="agent-header">
+        <div class="agent-icon" style="background:rgba(245,158,11,0.15);color:#fbbf24">⊞</div>
+        <div><div class="agent-name">CPO Ops Agent</div><div class="agent-role">agent/ops — operator automation + SLA</div></div>
+      </div>
+      <div class="agent-body">
+        <div class="trigger-label">Auto-triggers</div>
+        <div class="trigger-item">Low utilization → AI suggests price reduction automatically</div>
+        <div class="trigger-item">Revenue spike → attribute to which station/time slot</div>
+        <div class="trigger-item">Planned outage → auto-cancel bookings + notify users</div>
+        <div class="tools-row">
+          <span class="tool-chip">OCPP telemetry</span>
+          <span class="tool-chip amber">Analytics agent</span>
+          <span class="tool-chip">Firebase push</span>
+          <span class="tool-chip purple">XGBoost demand</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TAB 3: MCP -->
+<div class="section" id="tab-mcp">
+  <div class="section-title">MCP Server Registry — 11 Servers</div>
+  <table class="mcp-table">
+    <tr><th>MCP Server</th><th>Purpose</th><th>Status</th><th>Cost</th><th>Used by</th></tr>
+    <tr>
+      <td><div class="mcp-name">google-maps-mcp</div><div class="mcp-source">github.com/modelcontextprotocol/servers</div></td>
+      <td style="font-size:12px">Geocoding, nearby search, directions, distance matrix, route polyline</td>
+      <td><span class="status-badge status-exists">EXISTS</span></td>
+      <td><span class="status-badge status-paid" style="background:rgba(245,158,11,0.1);color:#fbbf24;border:1px solid rgba(245,158,11,0.3)">$200/mo</span></td>
+      <td><div class="used-in"><span class="sol-dot" style="background:#00d4ff;color:#000">S1</span><span class="sol-dot" style="background:#7c3aed;color:#fff">S3</span><span class="sol-dot" style="background:#10b981;color:#000">S5</span></div></td>
+    </tr>
+    <tr>
+      <td><div class="mcp-name">ocpp-charger-mcp</div><div class="mcp-source">custom build — FastAPI + OCPP 2.0.1</div></td>
+      <td style="font-size:12px">Real-time slot availability, session start/stop, charger health, booking API</td>
+      <td><span class="status-badge status-build">BUILD IT</span></td>
+      <td><span class="status-badge status-free">FREE (self-hosted)</span></td>
+      <td><div class="used-in"><span class="sol-dot" style="background:#00d4ff;color:#000">S1</span><span class="sol-dot" style="background:#7c3aed;color:#fff">S3</span><span class="sol-dot" style="background:#f59e0b;color:#000">S4</span></div></td>
+    </tr>
+    <tr>
+      <td><div class="mcp-name">bhashini-nlp-mcp</div><div class="mcp-source">custom build wrapping bhashini.gov.in API</div></td>
+      <td style="font-size:12px">ASR (speech→text), TTS (text→speech), NMT translation — 22 Indian languages</td>
+      <td><span class="status-badge status-build">BUILD IT</span></td>
+      <td><span class="status-badge status-free">FREE (govt API)</span></td>
+      <td><div class="used-in"><span class="sol-dot" style="background:#10b981;color:#000">S6</span><span class="sol-dot" style="background:#00d4ff;color:#000">S1</span></div></td>
+    </tr>
+    <tr>
+      <td><div class="mcp-name">discom-grid-mcp</div><div class="mcp-source">custom build — Puppeteer + NLP PDF parser</div></td>
+      <td style="font-size:12px">Scrape 42 DISCOM outage schedules, parse PDFs, map cuts to geo-coordinates</td>
+      <td><span class="status-badge status-build">BUILD IT</span></td>
+      <td><span class="status-badge status-free">FREE (public data)</span></td>
+      <td><div class="used-in"><span class="sol-dot" style="background:#f59e0b;color:#000">S5</span><span class="sol-dot" style="background:#7c3aed;color:#fff">S3</span></div></td>
+    </tr>
+    <tr>
+      <td><div class="mcp-name">vahan-vehicle-mcp</div><div class="mcp-source">custom build — VAHAN 4.0 NIC API wrapper</div></td>
+      <td style="font-size:12px">Fetch vehicle connector type, battery capacity, max charge rate from RC number</td>
+      <td><span class="status-badge status-build">BUILD IT</span></td>
+      <td><span class="status-badge status-free">FREE (govt API)</span></td>
+      <td><div class="used-in"><span class="sol-dot" style="background:#7c3aed;color:#fff">S2</span><span class="sol-dot" style="background:#00d4ff;color:#000">S1</span><span class="sol-dot" style="background:#10b981;color:#000">S6</span></div></td>
+    </tr>
+    <tr>
+      <td><div class="mcp-name">razorpay-upi-mcp</div><div class="mcp-source">Razorpay official + custom MCP wrapper</div></td>
+      <td style="font-size:12px">UPI AutoPay, payment link generation, split billing, Jan Dhan UPI integration</td>
+      <td><span class="status-badge status-build">BUILD IT</span></td>
+      <td><span class="status-badge" style="background:rgba(245,158,11,0.1);color:#fbbf24;border:1px solid rgba(245,158,11,0.3)">2% txn fee</span></td>
+      <td><div class="used-in"><span class="sol-dot" style="background:#00d4ff;color:#000">S1</span><span class="sol-dot" style="background:#7c3aed;color:#fff">S3</span><span class="sol-dot" style="background:#10b981;color:#000">S6</span></div></td>
+    </tr>
+    <tr>
+      <td><div class="mcp-name">twilio-comms-mcp</div><div class="mcp-source">Twilio official MCP (SMS + WhatsApp)</div></td>
+      <td style="font-size:12px">SMS alerts, WhatsApp bot messages, voice call fallback for USSD users</td>
+      <td><span class="status-badge status-exists">EXISTS</span></td>
+      <td><span class="status-badge" style="background:rgba(245,158,11,0.1);color:#fbbf24;border:1px solid rgba(245,158,11,0.3)">₹0.15/SMS</span></td>
+      <td><div class="used-in"><span class="sol-dot" style="background:#f43f5e;color:#fff">S4</span><span class="sol-dot" style="background:#f59e0b;color:#000">S5</span><span class="sol-dot" style="background:#10b981;color:#000">S6</span></div></td>
+    </tr>
+    <tr>
+      <td><div class="mcp-name">openweather-mcp</div><div class="mcp-source">OpenWeatherMap official API → MCP wrapper</div></td>
+      <td style="font-size:12px">Temp, humidity → Indian summer range reduction model (−15% to −25%)</td>
+      <td><span class="status-badge status-exists">EXISTS</span></td>
+      <td><span class="status-badge status-free">FREE tier</span></td>
+      <td><div class="used-in"><span class="sol-dot" style="background:#7c3aed;color:#fff">S3</span></div></td>
+    </tr>
+    <tr>
+      <td><div class="mcp-name">iot-smartplug-mcp</div><div class="mcp-source">custom build — MQTT + ESP32 firmware</div></td>
+      <td style="font-size:12px">Read live kWh from peer socket, remote lock/unlock, owner status ping</td>
+      <td><span class="status-badge status-build">BUILD IT</span></td>
+      <td><span class="status-badge status-free">FREE (self-hosted)</span></td>
+      <td><div class="used-in"><span class="sol-dot" style="background:#00d4ff;color:#000">S1</span></div></td>
+    </tr>
+    <tr>
+      <td><div class="mcp-name">firebase-push-mcp</div><div class="mcp-source">Firebase Cloud Messaging → MCP wrapper</div></td>
+      <td style="font-size:12px">Push notifications, background alerts, power cut warnings, slot ready alerts</td>
+      <td><span class="status-badge status-exists">EXISTS</span></td>
+      <td><span class="status-badge status-free">FREE up to 10M/mo</span></td>
+      <td><div class="used-in"><span class="sol-dot" style="background:#f59e0b;color:#000">S5</span><span class="sol-dot" style="background:#f43f5e;color:#fff">S4</span><span class="sol-dot" style="background:#7c3aed;color:#fff">S3</span></div></td>
+    </tr>
+    <tr>
+      <td><div class="mcp-name">posthog-analytics-mcp</div><div class="mcp-source">PostHog official MCP server</div></td>
+      <td style="font-size:12px">Session analytics, funnel tracking, CPO revenue dashboard, demand heatmaps</td>
+      <td><span class="status-badge status-exists">EXISTS</span></td>
+      <td><span class="status-badge status-free">FREE (self-hosted)</span></td>
+      <td><div class="used-in"><span class="sol-dot" style="background:#00d4ff;color:#000">ALL</span></div></td>
+    </tr>
+  </table>
+</div>
+
+<!-- TAB 4: PIPELINES -->
+<div class="section" id="tab-pipelines">
+  <div class="section-title">Zero-Human Automation Pipelines</div>
+
+  <div class="pipeline">
+    <div class="pipe-title"><span class="pipe-num">1</span>User finds & books a charger — full auto</div>
+    <div class="pipe-flow">
+      <div class="pipe-step"><div class="pipe-step-title">GPS Trigger</div><div class="pipe-step-agent">ChargeLocator Agent</div><div class="pipe-step-detail">App opens → detect location → fire Maps MCP query</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-step"><div class="pipe-step-title">QR Scan</div><div class="pipe-step-agent">VAHAN MCP</div><div class="pipe-step-detail">Scan RC QR → fetch vehicle profile → filter compatible slots</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-step"><div class="pipe-step-title">Grid Check</div><div class="pipe-step-agent">GridSense Agent</div><div class="pipe-step-detail">Cross-check DISCOM data → flag stations with live power only</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-step"><div class="pipe-step-title">Book Slot</div><div class="pipe-step-agent">OCPP MCP</div><div class="pipe-step-detail">Reserve slot via OCPP → lock for 15 min → UPI pre-auth</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-step"><div class="pipe-step-title">Navigate</div><div class="pipe-step-agent">Maps MCP</div><div class="pipe-step-detail">Auto-open nav → ETA sent via SMS to registered number</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-step"><div class="pipe-step-title">Auto Pay</div><div class="pipe-step-agent">Razorpay MCP</div><div class="pipe-step-detail">Session end → kWh calculated → UPI deducted auto</div></div>
+    </div>
+  </div>
+
+  <div class="pipeline">
+    <div class="pipe-title"><span class="pipe-num">2</span>Broken charger detected & fixed — zero human</div>
+    <div class="pipe-flow">
+      <div class="pipe-step"><div class="pipe-step-title">Session Fail</div><div class="pipe-step-agent">OCPP event hook</div><div class="pipe-step-detail">3 failed sessions in 4h → anomaly ML flags charger</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-step"><div class="pipe-step-title">Mark RED</div><div class="pipe-step-agent">TrustAudit Agent</div><div class="pipe-step-detail">Station marked broken → remove from search results instantly</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-step"><div class="pipe-step-title">Dispatch</div><div class="pipe-step-agent">Gig Worker API</div><div class="pipe-step-detail">Nearest ChargeMitra notified → accepted within 5 min</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-step"><div class="pipe-step-title">CPO Alert</div><div class="pipe-step-agent">Twilio MCP</div><div class="pipe-step-detail">CPO gets SLA warning → 6h window to restore or penalty</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-step"><div class="pipe-step-title">Restore</div><div class="pipe-step-agent">OCPP MCP</div><div class="pipe-step-detail">ChargeMitra marks fixed → OCPP confirms → station goes GREEN</div></div>
+    </div>
+  </div>
+
+  <div class="pipeline">
+    <div class="pipe-title"><span class="pipe-num">3</span>Highway trip planned & guarded — fully automated</div>
+    <div class="pipe-flow">
+      <div class="pipe-step"><div class="pipe-step-title">Destination</div><div class="pipe-step-agent">TripPlanner Agent</div><div class="pipe-step-detail">User types city → agent fetches route polyline from Maps MCP</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-step"><div class="pipe-step-title">Range Model</div><div class="pipe-step-agent">Weather + ML</div><div class="pipe-step-detail">Weather API → temp → adjust range estimate for Indian heat</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-step"><div class="pipe-step-title">Multi-Book</div><div class="pipe-step-agent">OCPP MCP ×N</div><div class="pipe-step-detail">Auto-book slot at each stop simultaneously → confirm all</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-step"><div class="pipe-step-title">Guard Loop</div><div class="pipe-step-agent">Orchestrator</div><div class="pipe-step-detail">Every 30min → check booked stations still live + powered</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-step"><div class="pipe-step-title">Rebook</div><div class="pipe-step-agent">TripPlanner Agent</div><div class="pipe-step-detail">Station fails → agent auto-finds + books replacement, notifies user</div></div>
+    </div>
+  </div>
+
+  <div class="pipeline">
+    <div class="pipe-title"><span class="pipe-num">4</span>E-rickshaw driver morning routine — voice-first</div>
+    <div class="pipe-flow">
+      <div class="pipe-step"><div class="pipe-step-title">Voice Wake</div><div class="pipe-step-agent">Bhashini MCP</div><div class="pipe-step-detail">"Bhayya, paas mein charging kahan milegi?" → ASR → intent</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-step"><div class="pipe-step-title">Locate</div><div class="pipe-step-agent">ReChakra Agent</div><div class="pipe-step-detail">Filter AC-only 5A/15A points in 1km → cheapest rate first</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-step"><div class="pipe-step-title">Battery Check</div><div class="pipe-step-agent">IoT MCP</div><div class="pipe-step-detail">Read battery % via MQTT → predict time to charge destination</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-step"><div class="pipe-step-title">Voice Reply</div><div class="pipe-step-agent">Bhashini TTS</div><div class="pipe-step-detail">Respond in Bhojpuri: "200 meter aage, ₹5 mein charge hoga"</div></div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-step"><div class="pipe-step-title">Auto Pay</div><div class="pipe-step-agent">Jan Dhan UPI</div><div class="pipe-step-detail">Session ends → auto deduct from linked Jan Dhan account</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 5: MATRIX -->
+<div class="section" id="tab-matrix">
+  <div class="section-title">Solution × Feature Matrix</div>
+  <div class="matrix-header">
+    <div class="matrix-col-label"></div>
+    <div class="matrix-col-label" style="color:#00d4ff">S1 ChargeAnna</div>
+    <div class="matrix-col-label" style="color:#7c3aed">S2 VehicleID</div>
+    <div class="matrix-col-label" style="color:#10b981">S3 ChargeSaathi</div>
+    <div class="matrix-col-label" style="color:#f43f5e">S4 TrustCharge</div>
+    <div class="matrix-col-label" style="color:#f59e0b">S5 GridSense</div>
+    <div class="matrix-col-label" style="color:#a78bfa">S6 ReChakra</div>
+  </div>
+  <div id="matrixRows"></div>
+</div>
+
+<!-- TAB 6: COST -->
+<div class="section" id="tab-cost">
+  <div class="section-title">Cost Breakdown & Tech Stack</div>
+  <div class="cost-grid">
+    <div class="cost-card">
+      <div class="cost-title">Free / Govt APIs (₹0/month)</div>
+      <div class="cost-item"><span>Bhashini ASR + TTS + NMT</span><span class="cost-amt cost-free">FREE</span></div>
+      <div class="cost-item"><span>VAHAN 4.0 Vehicle Database API</span><span class="cost-amt cost-free">FREE</span></div>
+      <div class="cost-item"><span>DISCOM outage data (public scrape)</span><span class="cost-amt cost-free">FREE</span></div>
+      <div class="cost-item"><span>NHAI highway data</span><span class="cost-amt cost-free">FREE</span></div>
+      <div class="cost-item"><span>Firebase FCM (up to 10M msgs)</span><span class="cost-amt cost-free">FREE</span></div>
+      <div class="cost-item"><span>OpenWeatherMap (free tier)</span><span class="cost-amt cost-free">FREE</span></div>
+      <div class="cost-item"><span>PostHog analytics (self-hosted)</span><span class="cost-amt cost-free">FREE</span></div>
+      <div class="cost-item"><span>Claude API (Anthropic hackathon credits)</span><span class="cost-amt cost-free">FREE</span></div>
+    </div>
+    <div class="cost-card">
+      <div class="cost-title">Paid Services (MVP estimate)</div>
+      <div class="cost-item"><span>Google Maps API (10K req/day)</span><span class="cost-amt cost-paid">~₹8,000/mo</span></div>
+      <div class="cost-item"><span>Twilio SMS (1000 msgs/day)</span><span class="cost-amt cost-paid">~₹3,500/mo</span></div>
+      <div class="cost-item"><span>Razorpay (2% per transaction)</span><span class="cost-amt cost-paid">Per txn</span></div>
+      <div class="cost-item"><span>AWS EC2 t3.medium (backend)</span><span class="cost-amt cost-paid">~₹4,200/mo</span></div>
+      <div class="cost-item"><span>PostgreSQL RDS (db.t3.micro)</span><span class="cost-amt cost-paid">~₹2,800/mo</span></div>
+      <div class="cost-item"><span>Redis ElastiCache (cache.t3.micro)</span><span class="cost-amt cost-paid">~₹2,100/mo</span></div>
+      <div class="cost-item"><span>ESP32 smart plug hardware (per unit)</span><span class="cost-amt cost-paid">₹1,500/unit</span></div>
+      <div class="cost-total"><span>Total MVP infra/month</span><span>~₹21,000</span></div>
+    </div>
+    <div class="cost-card">
+      <div class="cost-title">Frontend Stack</div>
+      <div class="cost-item"><span>React Native (Expo)</span><span class="cost-amt cost-free">iOS + Android</span></div>
+      <div class="cost-item"><span>React.js (CPO dashboard)</span><span class="cost-amt cost-free">Web</span></div>
+      <div class="cost-item"><span>TailwindCSS + shadcn/ui</span><span class="cost-amt cost-free">Styling</span></div>
+      <div class="cost-item"><span>React Query (server state)</span><span class="cost-amt cost-free">Data fetching</span></div>
+      <div class="cost-item"><span>Mapbox GL (custom map tiles)</span><span class="cost-amt cost-free">Free tier</span></div>
+      <div class="cost-item"><span>Zustand (app state)</span><span class="cost-amt cost-free">Lightweight</span></div>
+    </div>
+    <div class="cost-card">
+      <div class="cost-title">Backend + AI Stack</div>
+      <div class="cost-item"><span>FastAPI (Python 3.12)</span><span class="cost-amt cost-free">Agent gateway</span></div>
+      <div class="cost-item"><span>Node.js (OCPP WebSocket server)</span><span class="cost-amt cost-free">Charger protocol</span></div>
+      <div class="cost-item"><span>Celery + Redis (task queue)</span><span class="cost-amt cost-free">Async jobs</span></div>
+      <div class="cost-item"><span>Claude Sonnet 4 (all agents)</span><span class="cost-amt cost-paid">Per token</span></div>
+      <div class="cost-item"><span>scikit-learn (range ML model)</span><span class="cost-amt cost-free">On-device</span></div>
+      <div class="cost-item"><span>Puppeteer (DISCOM scraper)</span><span class="cost-amt cost-free">Self-hosted</span></div>
+      <div class="cost-item"><span>MQTT Mosquitto broker</span><span class="cost-amt cost-free">IoT comms</span></div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:1rem">Custom MCP Build Priority</div>
+  <div class="code-block">
+<span class="code-comment">// MCP Build Roadmap — ordered by hackathon priority</span>
+
+<span class="code-key">const</span> <span class="code-val">mcpBuildOrder</span> = [
+  {
+    <span class="code-key">name</span>: <span class="code-str">"ocpp-charger-mcp"</span>,
+    <span class="code-key">priority</span>: <span class="code-str">"P0 — build first"</span>,
+    <span class="code-key">time</span>: <span class="code-str">"4 hours"</span>,
+    <span class="code-key">why</span>: <span class="code-str">"Core of ALL solutions — slot booking, session status"</span>,
+    <span class="code-key">lib</span>: <span class="code-str">"python-ocpp + FastAPI → wrap as MCP tool"</span>
+  },
+  {
+    <span class="code-key">name</span>: <span class="code-str">"bhashini-nlp-mcp"</span>,
+    <span class="code-key">priority</span>: <span class="code-str">"P0 — build first"</span>,
+    <span class="code-key">time</span>: <span class="code-str">"3 hours"</span>,
+    <span class="code-key">why</span>: <span class="code-str">"ReChakra S6 voice agent — judge wow factor"</span>,
+    <span class="code-key">lib</span>: <span class="code-str">"requests → bhashini.gov.in/ulca/api → MCP tool"</span>
+  },
+  {
+    <span class="code-key">name</span>: <span class="code-str">"discom-grid-mcp"</span>,
+    <span class="code-key">priority</span>: <span class="code-str">"P1 — day 2"</span>,
+    <span class="code-key">time</span>: <span class="code-str">"6 hours"</span>,
+    <span class="code-key">why</span>: <span class="code-str">"Most unique — no competitor has this anywhere"</span>,
+    <span class="code-key">lib</span>: <span class="code-str">"Puppeteer + pdfplumber + spaCy NER → geo-mapping"</span>
+  },
+  {
+    <span class="code-key">name</span>: <span class="code-str">"vahan-vehicle-mcp"</span>,
+    <span class="code-key">priority</span>: <span class="code-str">"P1 — day 2"</span>,
+    <span class="code-key">time</span>: <span class="code-str">"2 hours"</span>,
+    <span class="code-key">why</span>: <span class="code-str">"S2 VehicleID QR — RC to connector type mapping"</span>,
+    <span class="code-key">lib</span>: <span class="code-str">"VAHAN 4.0 NIC API (free govt key) → MCP tool"</span>
+  },
+  {
+    <span class="code-key">name</span>: <span class="code-str">"iot-smartplug-mcp"</span>,
+    <span class="code-key">priority</span>: <span class="code-str">"P2 — post hackathon"</span>,
+    <span class="code-key">time</span>: <span class="code-str">"2 days"</span>,
+    <span class="code-key">why</span>: <span class="code-str">"Hardware dependency — simulate for demo"</span>,
+    <span class="code-key">lib</span>: <span class="code-str">"MQTT + ESP32 firmware + FastAPI MCP wrapper"</span>
+  }
+];
+  </div>
+</div>
+
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  const tabs = ['arch','agents','mcp','pipelines','matrix','cost'];
+  document.querySelectorAll('.tab')[tabs.indexOf(id)].classList.add('active');
+}
+
+const matrixData = [
+  { feature: 'Real-time slot booking', cells: ['primary','none','primary','none','none','none'] },
+  { feature: 'Charger map & locator', cells: ['primary','secondary','primary','secondary','primary','primary'] },
+  { feature: 'Vehicle QR compatibility', cells: ['secondary','primary','secondary','none','none','none'] },
+  { feature: 'Highway trip planning', cells: ['none','none','primary','none','secondary','none'] },
+  { feature: 'Grid/power cut alerts', cells: ['none','none','secondary','none','primary','none'] },
+  { feature: 'Broken charger reporting', cells: ['none','none','none','primary','secondary','none'] },
+  { feature: 'Peer socket P2P booking', cells: ['primary','none','none','none','none','none'] },
+  { feature: 'Voice UI (Bhashini)', cells: ['none','none','none','none','none','primary'] },
+  { feature: 'Regional language support', cells: ['secondary','none','none','none','none','primary'] },
+  { feature: 'UPI / Jan Dhan payment', cells: ['primary','none','primary','none','none','primary'] },
+  { feature: 'CPO operator dashboard', cells: ['none','none','secondary','primary','none','none'] },
+  { feature: 'Battery health & ML', cells: ['none','none','none','none','none','primary'] },
+  { feature: 'Gig tech dispatch (ChargeMitra)', cells: ['none','none','none','primary','none','none'] },
+  { feature: 'DISCOM outage scraping', cells: ['none','none','secondary','none','primary','none'] },
+  { feature: 'OCPP protocol integration', cells: ['secondary','none','primary','primary','none','none'] },
+  { feature: 'SMS/WhatsApp fallback', cells: ['secondary','none','primary','secondary','primary','primary'] },
+];
+
+const matrixDiv = document.getElementById('matrixRows');
+matrixData.forEach(row => {
+  const d = document.createElement('div');
+  d.className = 'matrix-row';
+  d.innerHTML = `<div class="matrix-row-label">${row.feature}</div>` +
+    row.cells.map(c => `<div class="matrix-cell ${c === 'primary' ? 'cell-primary' : c === 'secondary' ? 'cell-secondary' : 'cell-none'}">${c === 'primary' ? 'Core' : c === 'secondary' ? 'Used' : '—'}</div>`).join('');
+  matrixDiv.appendChild(d);
+});
+</script>
