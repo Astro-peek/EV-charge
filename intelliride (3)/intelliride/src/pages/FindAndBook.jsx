@@ -138,7 +138,7 @@ const FindAndBook = () => {
       const startTime = new Date();
       const endTime = new Date(startTime.getTime() + selectedDuration * 60 * 60 * 1000); 
       const bookingData = {
-        user_id: user.id,
+        user_id: user.uid,
         station_id: selectedStation.id,
         start_time: startTime,
         end_time: endTime,

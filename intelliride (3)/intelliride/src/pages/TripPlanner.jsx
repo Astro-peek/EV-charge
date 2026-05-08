@@ -122,10 +122,39 @@ const TripPlanner = () => {
 
       let start = userLocation;
       if (!start || (from && from.toLowerCase() !== "my current location")) {
-        start = cityCoords[from.toLowerCase()] || cityCoords["delhi"];
+        const startCity = cityCoords[from.toLowerCase()];
+        if (startCity) {
+          start = startCity;
+        } else {
+          try {
+            const resStart = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${from}`);
+            const dataStart = await resStart.json();
+            if (dataStart && dataStart.length > 0) {
+              start = [parseFloat(dataStart[0].lat), parseFloat(dataStart[0].lon)];
+            } else {
+              start = cityCoords["delhi"];
+            }
+          } catch (e) {
+            start = cityCoords["delhi"];
+          }
+        }
       }
       
-      const end = cityCoords[to.toLowerCase()] || cityCoords["mumbai"];
+      let end = cityCoords["mumbai"];
+      const endCity = cityCoords[to.toLowerCase()];
+      if (endCity) {
+        end = endCity;
+      } else {
+        try {
+          const resEnd = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${to}`);
+          const dataEnd = await resEnd.json();
+          if (dataEnd && dataEnd.length > 0) {
+            end = [parseFloat(dataEnd[0].lat), parseFloat(dataEnd[0].lon)];
+          }
+        } catch (e) {
+          end = cityCoords["mumbai"];
+        }
+      }
 
       // 2. Fetch Plan from Backend
       const res = await api.post("/trips/plan", {

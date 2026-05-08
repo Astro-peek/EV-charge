@@ -38,11 +38,11 @@ const HostDashboard = () => {
   const [completingBooking, setCompletingBooking] = useState(null);
 
   const fetchData = useCallback(async () => {
-    if (!user?.id) return;
+    if (!user?.uid) return;
     try {
       const [stationsRes, bookingsRes] = await Promise.all([
-        hostService.getMyStations(user.id),
-        hostService.getHostBookings(user.id),
+        hostService.getMyStations(user.uid),
+        hostService.getHostBookings(user.uid),
       ]);
       setStations(stationsRes.data || []);
       setBookings(bookingsRes.data || []);
