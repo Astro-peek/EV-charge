@@ -28,7 +28,7 @@ export const agentService = {
 
 export const bookingService = {
   // Using Express Backend
-  getBookings: () => api.get("/bookings"),
+  getBookings: (userId) => api.get("/bookings", { params: { userId } }),
   createBooking: (data) => api.post("/bookings", data),
   
   // Direct Supabase Option
@@ -51,6 +51,38 @@ export const stationService = {
     const { data, error } = await supabase.from('stations').select('*');
     return { data, error };
   }
+};
+
+export const paymentService = {
+  createOrder: (amount, bookingId) => api.post("/payments/create-order", { amount, bookingId }),
+  verifyPayment: (data) => api.post("/payments/verify", data),
+};
+
+export const analyticsService = {
+  getWaitTime: (stationId) => api.get(`/analytics/wait-time/${stationId}`),
+  getStationStats: (stationId) => api.get(`/analytics/station-stats/${stationId}`),
+};
+
+export const queueService = {
+  getQueue: (stationId) => api.get(`/queue/${stationId}`),
+  getOccupancy: (stationId) => api.get(`/queue/occupancy/${stationId}`),
+  completeBooking: (bookingId) => api.patch(`/queue/complete/${bookingId}`),
+};
+
+export const invoiceService = {
+  downloadInvoice: (bookingId) => `${API_BASE_URL}/invoices/${bookingId}`,
+  getPreview: (bookingId) => api.get(`/invoices/booking/${bookingId}/preview`),
+};
+
+export const tripService = {
+  plan: (data) => api.post("/trips/plan", data),
+  reroute: (data) => api.post("/trips/reroute", data),
+};
+
+export const hostService = {
+  getMyStations: (hostId) => api.get(`/stations/my?hostId=${hostId}`),
+  updateStationStatus: (stationId, status) => api.patch(`/stations/${stationId}/status`, { status }),
+  getHostBookings: (hostId) => api.get(`/bookings/host/${hostId}`),
 };
 
 export default api;

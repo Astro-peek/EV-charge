@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 import Card from "../components/common/Card";
 import Button from "../components/common/Button";
-import { bookingService } from "../utils/api";
+import { bookingService, invoiceService } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 
 const Dashboard = () => {
@@ -17,7 +17,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await bookingService.getBookings(user?.uid);
+        const response = await bookingService.getBookings(user?.id);
         setBookings(response.data);
       } catch (error) {
         console.error("Error fetching bookings:", error);
@@ -105,18 +105,30 @@ const Dashboard = () => {
                   className="flex justify-between items-center p-3 rounded-xl hover:bg-gray-50 transition border border-transparent hover:border-gray-100"
                 >
                   <div>
-                    <p className="font-medium">{booking.stationId?.name || "Unknown Station"}</p>
-                    <p className="text-sm text-gray-500">{booking.stationId?.location?.address || "N/A"}</p>
+                    <p className="font-medium">{booking.station?.name || "Unknown Station"}</p>
+                    <p className="text-sm text-gray-500">{booking.station?.address || "N/A"}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="flex flex-col items-end gap-2">
                     <span className="text-sm text-gray-500 block">
-                      {new Date(booking.startTime).toLocaleDateString()}
+                      {booking.start_time ? new Date(booking.start_time).toLocaleDateString() : "Invalid Date"}
                     </span>
                     <span className={`text-xs px-2 py-1 rounded-full ${
-                      booking.status === 'active' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'
+                      booking.status === 'active' ? 'bg-green-100 text-green-600' 
+                      : booking.status === 'completed' ? 'bg-blue-100 text-blue-600'
+                      : 'bg-gray-100 text-gray-600'
                     }`}>
                       {booking.status}
                     </span>
+                    {(booking.status === 'active' || booking.status === 'completed') && (
+                      <a
+                        href={invoiceService.downloadInvoice(booking.id)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs text-green-600 font-bold hover:underline flex items-center gap-1"
+                      >
+                        📄 Download Invoice
+                      </a>
+                    )}
                   </div>
                 </div>
               ))}

@@ -48,6 +48,16 @@ const Navbar = () => {
         {/* RIGHT SIDE */}
         <div className="flex items-center gap-4">
 
+          {/* HOST DASHBOARD LINK - only for logged in users */}
+          {user && (
+            <button
+              onClick={() => navigate("/host-dashboard")}
+              className="hidden md:flex px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-700 transition-all items-center gap-1.5"
+            >
+              ⚡ Host Dashboard
+            </button>
+          )}
+
           {/* ✅ CONDITIONAL BUTTON */}
           {user ? (
             <button

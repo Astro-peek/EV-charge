@@ -52,4 +52,24 @@ router.patch('/:id/status', async (req, res) => {
     }
 });
 
+// Get all bookings for a host's stations
+router.get('/host/:hostId', async (req, res) => {
+    try {
+        const hostStations = await prisma.station.findMany({
+            where: { host_id: req.params.hostId },
+            select: { id: true }
+        });
+        const stationIds = hostStations.map(s => s.id);
+        const bookings = await prisma.booking.findMany({
+            where: { station_id: { in: stationIds } },
+            include: { station: true },
+            orderBy: { start_time: 'desc' },
+            take: 50
+        });
+        res.json(bookings);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 module.exports = router;

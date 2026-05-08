@@ -12,12 +12,29 @@ app.use(express.json());
 // No manual DB connection needed for Prisma (auto-connects)
 console.log('⚡ Prisma ORM initialized with PostgreSQL');
 
+// Initialize MQTT IoT Listener
+require('./services/mqttService');
+
+
 // Routes
 const stationRoutes = require('./routes/stationRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
+const vehicleRoutes = require('./routes/vehicleRoutes');
+const tripRoutes = require('./routes/tripRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
+const queueRoutes = require('./routes/queueRoutes');
+const invoiceRoutes = require('./routes/invoiceRoutes');
 
 app.use('/api/stations', stationRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/vehicles', vehicleRoutes);
+app.use('/api/trips', tripRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/queue', queueRoutes);
+app.use('/api/invoices', invoiceRoutes);
+
 
 // Basic Routes
 app.get('/', (req, res) => {
@@ -29,24 +46,16 @@ app.get('/health', (req, res) => {
 });
 
 const { orchestrateQuery } = require('./services/aiService');
-const { fetchNearbyStations } = require('./services/discoveryService');
 
 // AI Agent Orchestration Route
 app.post('/api/agent/orchestrate', async (req, res) => {
-    const { query } = req.body;
-    const result = await orchestrateQuery(query);
+    const { query, lang } = req.body;
+    const result = await orchestrateQuery(query, lang || 'en');
     res.json(result);
 });
 
-// Discovery Route (Real-time fetching from OpenChargeMap)
-app.get('/api/stations/discovery', async (req, res) => {
-    const { lat, lng } = req.query;
-    if (!lat || !lng) return res.status(400).json({ error: "Lat/Lng required" });
-    
-    const stations = await fetchNearbyStations(lat, lng);
-    res.json(stations);
-});
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
+

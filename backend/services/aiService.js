@@ -1,28 +1,48 @@
-const Anthropic = require('@anthropic-ai/sdk');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+/**
+ * EV Charge OS Orchestrator (Powered by Gemini)
+ * Handles query analysis, routing, and regional language translation.
+ */
 const orchestrateQuery = async (query) => {
   try {
-    const response = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20240620",
-      max_tokens: 1024,
-      system: "You are the EV Charge OS Orchestrator. Your job is to analyze user queries and route them to one of our 4 core features: 1. ChargeAnna (P2P Charging), 2. VehicleID (Compatibility), 3. ChargeSaathi (Trip Planning), 6. ReChakra (E-Rickshaw/Regional). Respond in JSON format with 'feature', 'reason', and a 'suggestion'.",
-      messages: [{ role: "user", content: query }],
-    });
+    const prompt = `
+      You are the EV Charge OS Orchestrator. 
+      Analyze the user query (which might be in English, Hindi, Bhojpuri, or other Indian languages).
+      
+      Route it to one of these 4 features:
+      1. ChargeAnna (P2P Charging/Listing)
+      2. VehicleID (Compatibility/Registration lookup)
+      3. ChargeSaathi (Highway Trip Planning)
+      4. ReChakra (E-Rickshaw/Regional/General help)
 
-    // Handle potential string vs object response
-    const content = response.content[0].text;
-    return JSON.parse(content);
+      Respond ONLY in valid JSON format:
+      {
+        "feature": "Name of the feature",
+        "reason": "Brief explanation",
+        "suggestion": "A friendly response in the user's language (or English if preferred)",
+        "detected_language": "The language you detected"
+      }
+
+      User Query: "${query}"
+    `;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text().replace(/```json|```/g, "").trim();
+    
+    return JSON.parse(text);
   } catch (error) {
-    console.error("AI Orchestration Error:", error);
+    console.error("Gemini Orchestration Error:", error);
     return { 
       feature: "General", 
-      suggestion: "I'm here to help you find a charger or plan your trip. What would you like to do?" 
+      suggestion: "I am here to help you find a charger. How can I assist you today?" 
     };
   }
 };
 
 module.exports = { orchestrateQuery };
+
