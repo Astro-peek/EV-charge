@@ -8,3 +8,78 @@ body {
   background: #ffffff;
   color: #111827;
 }
+
+/* Premium Map Marker Styles (Globally Available) */
+
+.user-marker-icon {
+  background: transparent;
+}
+
+.user-marker-pulse {
+  width: 24px;
+  height: 24px;
+  background: #3b82f6; /* Blue for user location */
+  border: 4px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+.user-marker-pulse::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 50%;
+  border: 4px solid #3b82f6;
+  animation: pulse 1.5s infinite ease-out;
+  opacity: 0;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+.custom-station-icon {
+  background: transparent;
+}
+
+.station-marker-outer {
+  width: 36px;
+  height: 36px;
+  background: #22c55e;
+  border: 4px solid #fff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+  transition: all 0.3s ease;
+}
+
+.station-marker-outer:hover {
+  transform: scale(1.1) rotate(5deg);
+  background: #16a34a;
+}
+
+.station-marker-inner {
+  color: #fff;
+  width: 20px;
+  height: 20px;
+}
+
+/* Fix Leaflet Popups to be more premium */
+.leaflet-popup-content-wrapper {
+  border-radius: 20px !important;
+  padding: 0 !important;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1) !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  width: auto !important;
+}

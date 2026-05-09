@@ -1,51 +1,71 @@
 const express = require('express');
 const router = express.Router();
 const prisma = require('../lib/prisma');
+const { translateToEnglish } = require('../services/voiceService');
 
-// Mock Bhashini API / Voice Search
-// In production, this would send an audio blob to Bhashini and get translated intent.
-// Here we simulate parsing a Bhojpuri/Hindi command to find a station.
+// Bhashini API / Voice Search integration
 router.post('/voice-search', async (req, res) => {
-    const { audioUrl, textFallback, location } = req.body;
-    
-    // Simulating Bhashini NLP Translation
-    console.log(`🎙️ Received Audio/Text: "${textFallback}"`);
-    console.log(`🧠 Processing via Bhashini Indic NLP...`);
-    
-    // Assume the intent parsed is "Find cheapest 15A socket near me"
     try {
-        const query = {
-            where: {
-                type: 'p2p',
-                connector_types: { has: '15A Socket' },
-            },
-            orderBy: {
-                price_per_unit: 'asc' // Cheapest first
-            },
-            take: 3
-        };
+        const { audioUrl, textFallback, location, language = 'hi' } = req.body;
+        
+        if (!textFallback && !audioUrl) {
+            return res.status(400).json({ error: "Missing audio or text input for voice search." });
+        }
+
+        console.log(`🎙️ Received Request (Lang: ${language}): "${textFallback || audioUrl}"`);
+        
+        // Translate regional text to English using our service
+        const englishIntent = await translateToEnglish(textFallback, language);
+        console.log(`🧠 Translated Intent: "${englishIntent}"`);
+        
+        // Basic Intent Resolution based on keywords (In real production, this would use an NLP Engine or LLM)
+        let responseText = "Aas pass charge point mil gaya hai.";
+        let query = { take: 3 };
+
+        if (englishIntent.toLowerCase().includes('cheapest') || englishIntent.toLowerCase().includes('cheap')) {
+            query = {
+                where: { type: 'p2p', connector_types: { has: '15A Socket' } },
+                orderBy: { price_per_unit: 'asc' },
+                take: 3
+            };
+            responseText = language === 'Bhojpuri' 
+                ? "Aha khatir sabse sasta charge point mil gail ba." 
+                : "Aas pass sabse sasta charge point mil gaya hai.";
+        } else {
+            // Default query for nearest available
+            query = {
+                where: { status: 'available' },
+                take: 3
+            };
+            responseText = language === 'Bhojpuri'
+                ? "Kareeb me charge point mil gail ba."
+                : "Aapke paas charge point mil gaya hai.";
+        }
 
         const stations = await prisma.station.findMany(query);
         
-        // Simulating the Text-to-Speech response in Bhojpuri/Hindi
-        const responseText = "Aas pass sabse sasta charge point mil gaya hai.";
-        
         res.json({
             success: true,
-            intent: "find_cheap_charger",
+            intent: englishIntent,
             translatedText: responseText,
             audioResponseUrl: "mock_bhojpuri_audio.mp3",
             results: stations
         });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Voice Search Error:", err);
+        res.status(500).json({ error: "Internal server error during voice processing." });
     }
 });
 
 // Log daily income
 router.post('/income', async (req, res) => {
-    const { driver_id, amount } = req.body;
     try {
+        const { driver_id, amount } = req.body;
+        
+        if (!driver_id || amount === undefined || isNaN(amount)) {
+            return res.status(400).json({ error: "Invalid driver ID or amount." });
+        }
+
         const log = await prisma.incomeLog.create({
             data: {
                 driver_id,
@@ -55,14 +75,19 @@ router.post('/income', async (req, res) => {
         });
         res.json({ success: true, log });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Income Log Error:", err);
+        res.status(500).json({ error: "Failed to log income." });
     }
 });
 
 // Get financial ratio (Income vs Charge Cost)
 router.get('/dashboard/:driverId', async (req, res) => {
-    const { driverId } = req.params;
     try {
+        const { driverId } = req.params;
+        if (!driverId) {
+             return res.status(400).json({ error: "Driver ID is required." });
+        }
+
         // Fetch total income
         const incomes = await prisma.incomeLog.findMany({
             where: { driver_id: driverId }
@@ -81,14 +106,19 @@ router.get('/dashboard/:driverId', async (req, res) => {
             ratio: totalExpense > 0 ? (totalIncome / totalExpense).toFixed(2) : 'N/A'
         });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Dashboard Fetch Error:", err);
+        res.status(500).json({ error: "Failed to retrieve dashboard metrics." });
     }
 });
 
 // Simulate Battery Degradation ML Model
 router.post('/battery-cycle', async (req, res) => {
-    const { vehicle_id } = req.body;
     try {
+        const { vehicle_id } = req.body;
+        if (!vehicle_id) {
+             return res.status(400).json({ error: "Vehicle ID is required." });
+        }
+
         let health = await prisma.batteryHealth.findFirst({
             where: { vehicle_id }
         });
@@ -112,11 +142,14 @@ router.post('/battery-cycle', async (req, res) => {
             }
         });
 
-        const status = newDegradation > 20 ? 'WARNING: Battery replacement needed soon' : 'HEALTHY';
+        let status = 'HEALTHY';
+        if (newDegradation > 20) status = 'WARNING: Battery replacement needed soon';
+        if (newDegradation > 40) status = 'CRITICAL: Replace immediately';
 
         res.json({ health: updated, status });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Battery Cycle Error:", err);
+        res.status(500).json({ error: "Failed to process battery cycle." });
     }
 });
 

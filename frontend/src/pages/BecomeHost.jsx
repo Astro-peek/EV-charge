@@ -12,8 +12,41 @@ import {
   ShieldCheck,
   Calculator,
   MessageCircle,
-  FileCheck
+  FileCheck,
+  MapPin,
+  Search
 } from "lucide-react";
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import { userIcon, premiumStationIcon } from "../utils/mapIcons";
+
+
+
+function LocationMarker({ position, setPosition }) {
+  useMapEvents({
+    click(e) {
+      setPosition([e.latlng.lat, e.latlng.lng]);
+    },
+  });
+  return position === null ? null : (
+    <Marker position={position} icon={premiumStationIcon}></Marker>
+  );
+}
+
+function MapController({ center }) {
+  const map = useMap();
+  map.flyTo(center, map.getZoom());
+  return null;
+}
+
+const INDIAN_STATES = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", 
+  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", 
+  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", 
+  "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi"
+];
 
 const BecomeHost = () => {
   const navigate = useNavigate();
@@ -23,12 +56,40 @@ const BecomeHost = () => {
 
   const [formData, setFormData] = useState({
     name: "",
-    address: "",
+    state: "Madhya Pradesh",
+    city: "",
+    tehsil: "",
+    local_address: "",
     type: "Dhaba",
     power: "Single Phase (3.3 kW)",
     contact: "",
     aadhaar: ""
   });
+  
+  // Default map position (Center of India / MP)
+  const [mapPosition, setMapPosition] = useState([23.85, 79.92]); 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchingMap, setIsSearchingMap] = useState(false);
+
+  const handleMapSearch = async (e) => {
+    e.preventDefault();
+    if (!searchQuery) return;
+    setIsSearchingMap(true);
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery + ", India")}&limit=1`);
+      const data = await res.json();
+      if (data && data.length > 0) {
+        setMapPosition([parseFloat(data[0].lat), parseFloat(data[0].lon)]);
+      } else {
+        alert("Location not found. Try a different search term.");
+      }
+    } catch (err) {
+      console.error("Map search error:", err);
+      alert("Failed to search location.");
+    } finally {
+      setIsSearchingMap(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,15 +101,26 @@ const BecomeHost = () => {
     
     setIsLoading(true);
     try {
+      // 1. Geocode the address using Nominatim (OpenStreetMap) ONLY IF Map Pin wasn't moved manually
+      // We will prefer the map pin if it was changed by the user, but for now let's always use mapPosition
+      // since we initialize it. If they want high precision, they click the map.
+      let lat = mapPosition[0];
+      let lng = mapPosition[1];
+      
+      const fullAddress = `${formData.local_address}, ${formData.tehsil}, ${formData.city}, ${formData.state}, India`;
+
+      // 2. Submit Station to backend
       await stationService.createStation({
         name: `${formData.name} (${formData.type})`,
-        address: formData.address,
+        address: fullAddress,
         type: "AC", // Postgres constraint expects AC, DC, or Both
         power: formData.power,
         status: "available",
         price_per_unit: 14.0,
         connector_types: ["15A Socket", "16A Socket"],
-        host_id: user.uid
+        host_id: user.uid,
+        lat: lat,
+        lng: lng
       });
       setIsSubmitted(true);
     } catch (err) {
@@ -257,20 +329,109 @@ const BecomeHost = () => {
               />
             </div>
 
-            {/* Address */}
-            <div>
-              <label className="block text-lg font-medium text-[#1e140f] mb-3">
-                Address
-              </label>
+            {/* Comprehensive Address Section */}
+            <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100 space-y-5">
+              <h3 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">Address Details</h3>
+              
+              <div className="grid md:grid-cols-3 gap-5">
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-2">State</label>
+                  <select
+                    required
+                    value={formData.state}
+                    onChange={(e) => setFormData({...formData, state: e.target.value})}
+                    className="w-full border border-[#ddd7cf] rounded-xl px-4 py-3 text-md outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                  >
+                    {INDIAN_STATES.map(state => (
+                      <option key={state} value={state}>{state}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-2">City / District</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.city}
+                    onChange={(e) => setFormData({...formData, city: e.target.value})}
+                    placeholder="e.g. Chhatarpur"
+                    className="w-full border border-[#ddd7cf] rounded-xl px-4 py-3 text-md outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-2">Tehsil / Block</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.tehsil}
+                    onChange={(e) => setFormData({...formData, tehsil: e.target.value})}
+                    placeholder="e.g. Khajuraho"
+                    className="w-full border border-[#ddd7cf] rounded-xl px-4 py-3 text-md outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                  />
+                </div>
+              </div>
 
-              <input
-                type="text"
-                required
-                value={formData.address}
-                onChange={(e) => setFormData({...formData, address: e.target.value})}
-                placeholder="Full address"
-                className="w-full border border-[#ddd7cf] rounded-2xl px-5 py-4 text-lg outline-none focus:ring-2 focus:ring-green-500"
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-2">Local Address / Landmark</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.local_address}
+                  onChange={(e) => setFormData({...formData, local_address: e.target.value})}
+                  placeholder="Near Western Group of Temples, Main Road"
+                  className="w-full border border-[#ddd7cf] rounded-xl px-4 py-3 text-md outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                />
+              </div>
+            </div>
+
+            {/* Map Picker */}
+            <div>
+              <label className="block text-lg font-medium text-[#1e140f] mb-3 flex items-center gap-2">
+                <MapPin size={20} className="text-green-600" />
+                Pin exact location on Map
+              </label>
+              <p className="text-sm text-gray-500 mb-3">Search for your city or area, then click the map to drop the exact pin.</p>
+              
+              <div className="flex gap-2 mb-4">
+                <input 
+                  type="text" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search map for city, area, or landmark..."
+                  className="flex-1 border border-[#ddd7cf] rounded-xl px-4 py-3 text-md outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleMapSearch(e);
+                    }
+                  }}
+                />
+                <button 
+                  type="button" 
+                  onClick={handleMapSearch}
+                  disabled={isSearchingMap}
+                  className="bg-gray-900 text-white px-6 rounded-xl flex items-center justify-center hover:bg-gray-800 transition-colors disabled:opacity-50"
+                >
+                  {isSearchingMap ? <span className="animate-pulse">...</span> : <Search size={20} />}
+                </button>
+              </div>
+
+              <div className="h-64 w-full rounded-2xl overflow-hidden border-2 border-green-200 relative shadow-inner z-0">
+                <MapContainer
+                  center={mapPosition}
+                  zoom={13}
+                  className="h-full w-full"
+                  scrollWheelZoom={true}
+                >
+                  <TileLayer 
+                    url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" 
+                    attribution='&copy; OpenStreetMap'
+                  />
+                  <LocationMarker position={mapPosition} setPosition={setMapPosition} />
+                  <MapController center={mapPosition} />
+                </MapContainer>
+              </div>
+              <p className="text-xs text-gray-400 mt-2 text-right">Coordinates: {mapPosition[0].toFixed(4)}, {mapPosition[1].toFixed(4)}</p>
             </div>
 
             {/* Selects */}

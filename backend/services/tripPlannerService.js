@@ -101,6 +101,7 @@ const planTrip = async (startLat, startLng, endLat, endLng, vehicleRangeKm = 200
         totalDistance: totalDistance.toFixed(1),
         stopsNeeded: stops.length,
         chargingStops: stops,
+        allStations: allStations,
         message: `🗺️ Trip planned with ${stops.length} charging stop(s).`
     };
 };

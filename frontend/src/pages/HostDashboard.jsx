@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Zap, MapPin, Clock, TrendingUp, Users, ToggleLeft, ToggleRight,
   CheckCircle, AlertCircle, RefreshCw, Download, BarChart3,
-  Wifi, WifiOff, Star, IndianRupee
+  Wifi, WifiOff, Star, IndianRupee, Trash2
 } from "lucide-react";
 import { hostService, queueService, analyticsService, invoiceService } from "../utils/api";
 
@@ -85,6 +85,18 @@ const HostDashboard = () => {
       setStations(prev => prev.map(s => s.id === stationId ? { ...s, status: next } : s));
     } catch (err) { alert("Failed to toggle status"); }
     finally { setTogglingStation(null); }
+  };
+
+  const handleDeleteStation = async (stationId) => {
+    if (!window.confirm("Are you sure you want to delete this station? This cannot be undone.")) return;
+    
+    try {
+      await hostService.deleteStation(stationId);
+      setStations(prev => prev.filter(s => s.id !== stationId));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete station. It might have active bookings.");
+    }
   };
 
   const handleCompleteBooking = async (bookingId) => {
@@ -228,18 +240,27 @@ const HostDashboard = () => {
                   <span className="text-sm font-bold text-slate-500">
                     {station.status === "available" ? "Station is Live" : "Station is Offline"}
                   </span>
-                  <button
-                    onClick={() => handleToggleStatus(station.id, station.status)}
-                    disabled={togglingStation === station.id}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition-all ${
-                      station.status === "available"
-                        ? "bg-red-50 text-red-600 hover:bg-red-100"
-                        : "bg-green-50 text-green-600 hover:bg-green-100"
-                    }`}
-                  >
-                    {station.status === "available" ? <WifiOff size={16} /> : <Wifi size={16} />}
-                    {station.status === "available" ? "Go Offline" : "Go Live"}
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleToggleStatus(station.id, station.status)}
+                      disabled={togglingStation === station.id}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition-all ${
+                        station.status === "available"
+                          ? "bg-red-50 text-red-600 hover:bg-red-100"
+                          : "bg-green-50 text-green-600 hover:bg-green-100"
+                      }`}
+                    >
+                      {station.status === "available" ? <WifiOff size={16} /> : <Wifi size={16} />}
+                      {station.status === "available" ? "Go Offline" : "Go Live"}
+                    </button>
+                    <button
+                      onClick={() => handleDeleteStation(station.id)}
+                      className="flex items-center justify-center p-2 rounded-xl bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-all border border-slate-100"
+                      title="Delete Station"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             ))}

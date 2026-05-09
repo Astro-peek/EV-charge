@@ -23,6 +23,7 @@ import {
   useMap
 } from "react-leaflet";
 import L from "leaflet";
+import { userIcon, premiumStationIcon, unselectedStationIcon } from "../utils/mapIcons";
 import "leaflet/dist/leaflet.css";
 import "./TripPlanner.css";
 import api, { tripService } from "../utils/api";
@@ -48,35 +49,6 @@ const TripPlanner = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [rerouteAlert, setRerouteAlert] = useState(null);
   const [endCoords, setEndCoords] = useState(null);
-
-  // Custom User Marker Icon (Pulsing)
-  const userIcon = L.divIcon({
-    className: "user-marker-icon",
-    html: '<div class="user-marker-pulse"></div>',
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
-  });
-
-  // Custom Station Icon (Premium Design)
-  const stationIcon = L.divIcon({
-    className: "custom-station-icon",
-    html: `
-      <div class="station-marker-outer">
-        <div class="station-marker-inner">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 7V5a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path>
-            <line x1="10" y1="9" x2="10" y2="15"></line>
-            <polyline points="14 12 10 12"></polyline>
-            <path d="M22 11h-4"></path>
-            <path d="M22 15h-4"></path>
-          </svg>
-        </div>
-      </div>
-    `,
-    iconSize: [36, 36],
-    iconAnchor: [18, 18],
-    popupAnchor: [0, -18],
-  });
 
   useEffect(() => {
     // 1. Get User Location
@@ -404,40 +376,48 @@ const TripPlanner = () => {
                   </Marker>
                 )}
 
-                {/* CHARGING STOPS */}
-                {result?.chargingStops?.map((stop, i) => (
-                  stop.lat && (
-                    <Marker key={i} position={[stop.lat, stop.lng]} icon={stationIcon}>
-                      <Popup className="custom-popup">
-                        <div className="p-1 min-w-[180px]">
-                          <div className="flex items-center gap-2 mb-2">
+                {/* Unselected Network Stations */}
+                {result?.allStations?.filter(s => !result.chargingStops.some(stop => stop.id === s.id)).map((station, i) => (
+                  <Marker key={`network-${i}`} position={[station.lat, station.lng]} icon={unselectedStationIcon}>
+                    <Popup className="premium-popup">
+                      <div className="p-2 min-w-[100px]">
+                        <h4 className="font-black text-slate-900 text-sm leading-tight">{station.name || station.location}</h4>
+                        <p className="text-xs text-slate-500 mt-1">Available Station</p>
+                      </div>
+                    </Popup>
+                  </Marker>
+                ))}
+
+                {/* Calculated Route Charging Stops */}
+                {result?.chargingStops?.map((stop, i) => {
+                  if (stop.warning || !stop.lat) return null;
+                  return (
+                    <Marker key={`stop-${i}`} position={[stop.lat, stop.lng]} icon={premiumStationIcon}>
+                      <Popup className="premium-popup">
+                        <div className="p-3 min-w-[180px]">
+                          <div className="flex items-center gap-2 mb-3">
                             <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center text-white">
                               <Zap size={16} />
                             </div>
-                            <h4 className="font-black text-slate-900 text-sm leading-tight">{stop.name}</h4>
+                            <h4 className="font-black text-slate-900 text-sm leading-tight">{stop.name || stop.location}</h4>
                           </div>
                           
-                          <div className="space-y-2 border-t border-slate-100 pt-2">
-                            <div className="flex justify-between items-center">
-                              <span className="text-[10px] font-bold text-slate-400 uppercase">Power</span>
-                              <span className="text-[10px] font-black text-green-600 bg-green-50 px-2 py-0.5 rounded-md">{stop.power || "30kW"}</span>
+                          <div className="space-y-2 border-t border-slate-100 pt-3">
+                            <div className="flex justify-between items-center text-[10px]">
+                              <span className="font-bold text-slate-400 uppercase">Distance</span>
+                              <span className="font-black text-slate-700">{stop.distFromCurrent || "0"} km</span>
                             </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-[10px] font-bold text-slate-400 uppercase">Price</span>
-                              <span className="text-[10px] font-black text-slate-700">₹{stop.price_per_unit || "15"}/unit</span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-[10px] font-bold text-slate-400 uppercase">Type</span>
-                              <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{stop.type || "CCS2"}</span>
+                            <div className="flex justify-between items-center text-[10px]">
+                              <span className="font-bold text-slate-400 uppercase">Type</span>
+                              <span className="font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{stop.type || "DC Fast"}</span>
                             </div>
                           </div>
-                          
-                          <p className="text-[9px] text-slate-400 mt-3 italic line-clamp-1">{stop.address}</p>
+                          <p className="text-[10px] text-slate-400 mt-3 italic line-clamp-1">{stop.address}</p>
                         </div>
                       </Popup>
                     </Marker>
-                  )
-                ))}
+                  );
+                })}
 
                 {/* DESTINATION */}
                 {routeCoordinates.length > 1 && (
@@ -497,17 +477,25 @@ const TripPlanner = () => {
                       <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">Charging Schedule</h4>
                       <div className="space-y-4">
                         {result.chargingStops.map((stop, i) => (
-                          <div key={i} className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl">
-                            <div className="w-10 h-10 rounded-xl bg-green-500 flex items-center justify-center text-slate-900">
-                              <Zap size={20} />
+                          <div key={i} className={`flex items-center gap-4 p-4 rounded-2xl ${stop.warning ? "bg-red-500/20 border border-red-500/30" : "bg-white/5"}`}>
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${stop.warning ? "bg-red-500 text-white" : "bg-green-500 text-slate-900"}`}>
+                              {stop.warning ? <AlertCircle size={20} /> : <Zap size={20} />}
                             </div>
                             <div className="flex-1">
-                              <p className="font-black">{stop.name || stop.location}</p>
-                              <p className="text-xs text-slate-400">Available station along route</p>
+                              {stop.warning ? (
+                                <p className="font-bold text-red-400">{stop.warning}</p>
+                              ) : (
+                                <>
+                                  <p className="font-black">{stop.name || stop.location}</p>
+                                  <p className="text-xs text-slate-400">Available station along route</p>
+                                </>
+                              )}
                             </div>
-                            <div className="text-right">
-                              <p className="text-xs font-bold text-green-500 uppercase">Stop {i + 1}</p>
-                            </div>
+                            {!stop.warning && (
+                              <div className="text-right">
+                                <p className="text-xs font-bold text-green-500 uppercase">Stop {i + 1}</p>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>

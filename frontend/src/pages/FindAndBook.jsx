@@ -12,6 +12,7 @@ import L from "leaflet";
 import { stationService, bookingService, paymentService, analyticsService, queueService } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 import Button from "../components/common/Button";
+import { userIcon, premiumStationIcon, selectedStationIcon } from "../utils/mapIcons";
 
 /* FIX LEAFLET MARKER ICONS */
 delete L.Icon.Default.prototype._getIconUrl;
@@ -49,27 +50,6 @@ const FindAndBook = () => {
   const [occupancy, setOccupancy] = useState({}); // stationId -> count
 
   const listRef = useRef(null);
-
-  // Custom User Marker Icon
-  const userIcon = new L.Icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-  });
-
-  const stationIcon = (isSelected) => new L.Icon({
-    iconUrl: isSelected 
-      ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png'
-      : 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-    iconSize: isSelected ? [35, 51] : [25, 41],
-    iconAnchor: isSelected ? [17, 51] : [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-  });
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -169,7 +149,7 @@ const FindAndBook = () => {
 
         // 3. Open Razorpay Checkout
         const options = {
-          key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_pIqEExSskEEnzW", 
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_SmXjcnxx0KN87g", 
           amount: order.amount,
           currency: order.currency,
           name: "IntelliRide EV",
@@ -406,7 +386,7 @@ const FindAndBook = () => {
             <Marker 
               key={s.id} 
               position={[s.lat, s.lng]} 
-              icon={stationIcon(selectedStation?.id === s.id)}
+              icon={selectedStation?.id === s.id ? selectedStationIcon : premiumStationIcon}
               eventHandlers={{
                 click: () => {
                   setSelectedStation(s);
@@ -445,41 +425,46 @@ const FindAndBook = () => {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="absolute right-0 top-[80px] bottom-0 w-full md:w-[500px] bg-white z-30 shadow-2xl flex flex-col border-l border-gray-100"
             >
-              {/* DETAIL HEADER */}
-              <div className="relative h-64 overflow-hidden bg-gray-900">
-                <img src={selectedStation.image} className="w-full h-full object-cover opacity-80" alt="" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                <button 
-                  onClick={() => {
-                    if (bookingStep === 2) setSelectedStation(null);
-                    else if (bookingStep > 2) setBookingStep(bookingStep - 1);
-                  }}
-                  className="absolute top-6 left-6 w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white hover:bg-white hover:text-gray-900 transition-all border border-white/20"
-                >
-                  <ArrowLeft size={24} />
-                </button>
-                <div className="absolute bottom-12 left-6 right-6">
-                  <div className="flex gap-2">
-                    <span className="px-3 py-1 bg-green-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-green-500/20">
-                      {selectedStation.type} Fast Charge
-                    </span>
+              {/* DETAIL HEADER - Only show if bookingStep < 5 */}
+              {bookingStep < 5 && (
+                <div className="relative h-64 overflow-hidden bg-gray-900 flex-shrink-0">
+                  <img src={selectedStation.image} className="w-full h-full object-cover opacity-80" alt="" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <button 
+                    onClick={() => {
+                      if (bookingStep === 2) setSelectedStation(null);
+                      else if (bookingStep > 2) setBookingStep(bookingStep - 1);
+                    }}
+                    className="absolute top-6 left-6 w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white hover:bg-white hover:text-gray-900 transition-all border border-white/20"
+                  >
+                    <ArrowLeft size={24} />
+                  </button>
+                  <div className="absolute bottom-12 left-6 right-6">
+                    <div className="flex gap-2">
+                      <span className="px-3 py-1 bg-green-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-green-500/20">
+                        {selectedStation.type} Fast Charge
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* DETAIL CONTENT */}
-              <div className="flex-1 overflow-y-auto p-8 pt-10 bg-white rounded-t-[40px] -mt-12 relative z-10">
-                <div className="mb-8">
-                  <div className="flex justify-between items-start gap-4">
-                    <h2 className="text-3xl font-black text-gray-900 leading-tight tracking-tighter">{selectedStation.name}</h2>
-                    <span className="flex items-center gap-1 px-3 py-1.5 bg-yellow-50 text-yellow-700 rounded-2xl text-xs font-black border border-yellow-100 shadow-sm flex-shrink-0">
-                      ⭐ {selectedStation.rating}
-                    </span>
+              {/* MAIN CONTENT AREA */}
+              <div className={`flex-1 overflow-y-auto p-8 relative z-10 bg-white ${bookingStep < 5 ? "pt-10 rounded-t-[40px] -mt-12" : "flex flex-col justify-center"}`}>
+                
+                {bookingStep < 5 && (
+                  <div className="mb-8">
+                    <div className="flex justify-between items-start gap-4">
+                      <h2 className="text-3xl font-black text-gray-900 leading-tight tracking-tighter">{selectedStation.name}</h2>
+                      <span className="flex items-center gap-1 px-3 py-1.5 bg-yellow-50 text-yellow-700 rounded-2xl text-xs font-black border border-yellow-100 shadow-sm flex-shrink-0">
+                        ⭐ {selectedStation.rating}
+                      </span>
+                    </div>
+                    <p className="text-gray-400 text-sm mt-1 flex items-center gap-1 font-medium">
+                      <MapPin size={14} className="text-green-500" /> {selectedStation.address}
+                    </p>
                   </div>
-                  <p className="text-gray-400 text-sm mt-1 flex items-center gap-1 font-medium">
-                    <MapPin size={14} className="text-green-500" /> {selectedStation.address}
-                  </p>
-                </div>
+                )}
 
                 {bookingStep === 2 ? (
                   <div className="space-y-8">

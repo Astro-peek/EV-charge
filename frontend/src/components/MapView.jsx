@@ -1,6 +1,8 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import L from "leaflet";
+import { userIcon, premiumStationIcon } from "../utils/mapIcons";
 
 // Fix default marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -14,6 +16,7 @@ L.Icon.Default.mergeOptions({
 });
 
 const MapView = () => {
+  const navigate = useNavigate();
   const [position, setPosition] = useState([23.2599, 77.4126]); // Bhopal default
 
   useEffect(() => {
@@ -50,23 +53,26 @@ const MapView = () => {
     <MapContainer center={position} zoom={13} className="h-full w-full rounded-2xl">
       
       <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
       />
 
       {/* ✅ User Location */}
-      <Marker position={position}>
-        <Popup>📍 You are here</Popup>
+      <Marker position={position} icon={userIcon}>
+        <Popup>
+          <div className="p-2 min-w-[100px] text-center font-bold text-slate-800">📍 You are here</div>
+        </Popup>
       </Marker>
 
       {/* ✅ EV Stations */}
       {stations.map((station) => (
-        <Marker key={station.id} position={station.position}>
+        <Marker key={station.id} position={station.position} icon={premiumStationIcon}>
           <Popup>
-            <div>
-              <h3 className="font-bold">{station.name}</h3>
+            <div className="min-w-[160px] p-1 text-center">
+              <h3 className="font-bold text-slate-800 leading-tight">{station.name}</h3>
+              <p className="text-xs text-slate-500 mt-1 mb-2">Fast DC Charging</p>
               <button
-                className="mt-2 bg-green-500 text-white px-3 py-1 rounded"
-                onClick={() => alert("Go to booking page")}
+                className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl font-bold transition-all shadow-md active:scale-95"
+                onClick={() => navigate("/book-slot")}
               >
                 Book Slot ⚡
               </button>
