@@ -21,17 +21,28 @@ router.get('/', async (req, res) => {
 
 // Discovery: Fetch nearby stations (Internal + External)
 router.get('/discovery', async (req, res) => {
-    const { lat, lng } = req.query;
+    const { lat, lng, connector_type } = req.query;
     if (!lat || !lng) return res.status(400).json({ error: "Lat/Lng required" });
 
     try {
+        const whereClause = {
+            lat: { gte: parseFloat(lat) - 1, lte: parseFloat(lat) + 1 },
+            lng: { gte: parseFloat(lng) - 1, lte: parseFloat(lng) + 1 }
+        };
+
+        if (connector_type) {
+            whereClause.connector_types = { has: connector_type };
+        }
+
         const internal = await prisma.station.findMany({
-            where: {
-                lat: { gte: parseFloat(lat) - 1, lte: parseFloat(lat) + 1 },
-                lng: { gte: parseFloat(lng) - 1, lte: parseFloat(lng) + 1 }
-            }
+            where: whereClause
         });
+        
         const external = await fetchNearbyStations(lat, lng);
+        
+        // Note: For a fully integrated system, you could also filter external stations here
+        // if the external API returns connector_types.
+        
         res.json({ internal, external });
     } catch (err) {
         res.status(500).json({ error: err.message });

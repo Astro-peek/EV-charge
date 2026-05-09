@@ -2,6 +2,7 @@
  * VehicleID Protocol Service
  * Mocks the VAHAN 4.0 API for fetching Vehicle Charging Profiles (VCP)
  */
+const prisma = require('../lib/prisma');
 
 const VEHICLE_DATABASE = {
     "MH12AB1234": {
@@ -35,18 +36,39 @@ const VEHICLE_DATABASE = {
 };
 
 const getVehicleProfile = async (registrationNumber) => {
-    // In a real app, this would call VAHAN 4.0 API
     const normalizedReg = registrationNumber.toUpperCase().replace(/\s/g, '');
     
-    // Return mock data or a default profile if not found
-    return VEHICLE_DATABASE[normalizedReg] || {
+    // 1. Check local database first
+    const existingProfile = await prisma.vehicleProfile.findUnique({
+        where: { reg_number: normalizedReg }
+    });
+
+    if (existingProfile) {
+        return existingProfile;
+    }
+
+    // 2. Mock calling VAHAN 4.0 API
+    const vahanData = VEHICLE_DATABASE[normalizedReg] || {
         model: "Generic EV",
         connector_type: "15A Socket",
         battery_capacity: "Unknown",
         max_voltage: "Unknown",
-        type: "Unknown",
-        note: "Vehicle not found in VAHAN mock, using default 15A profile."
+        type: "Unknown"
     };
+
+    // 3. Save to database for future lookups
+    const newProfile = await prisma.vehicleProfile.create({
+        data: {
+            reg_number: normalizedReg,
+            model: vahanData.model,
+            connector_type: vahanData.connector_type,
+            battery_capacity: vahanData.battery_capacity,
+            max_voltage: vahanData.max_voltage,
+            type: vahanData.type
+        }
+    });
+
+    return newProfile;
 };
 
 module.exports = { getVehicleProfile };
