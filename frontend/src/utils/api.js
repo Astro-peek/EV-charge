@@ -45,6 +45,7 @@ export const stationService = {
   // Using Express Backend
   getStations: () => api.get("/stations"),
   getStationById: (id) => api.get(`/stations/${id}`),
+  createStation: (data) => api.post("/stations", data),
 
   // Direct Supabase Option
   getStationsSupabase: async () => {

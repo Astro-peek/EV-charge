@@ -61,6 +61,21 @@ router.post('/', async (req, res) => {
     }
 });
 
+// Get stations owned by a specific host
+router.get('/my', async (req, res) => {
+    const { hostId } = req.query;
+    if (!hostId) return res.status(400).json({ error: 'hostId required' });
+    try {
+        const stations = await prisma.station.findMany({
+            where: { host_id: hostId },
+            include: { bookings: { take: 5, orderBy: { start_time: 'desc' } } }
+        });
+        res.json(stations);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // Get station by ID
 router.get('/:id', async (req, res) => {
     try {
@@ -97,20 +112,6 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-// Get stations owned by a specific host
-router.get('/my', async (req, res) => {
-    const { hostId } = req.query;
-    if (!hostId) return res.status(400).json({ error: 'hostId required' });
-    try {
-        const stations = await prisma.station.findMany({
-            where: { host_id: hostId },
-            include: { bookings: { take: 5, orderBy: { start_time: 'desc' } } }
-        });
-        res.json(stations);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
 
 // Toggle station status (host control)
 router.patch('/:id/status', async (req, res) => {

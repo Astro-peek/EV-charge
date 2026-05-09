@@ -1,168 +1,151 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  BatteryCharging,
+  Mic,
   MapPin,
-  Truck,
+  IndianRupee,
   Activity,
-  ArrowRight,
-  ShieldCheck,
+  Battery,
+  Settings,
+  Volume2
 } from "lucide-react";
 
 const ReChakraPage = () => {
+  const [isRecording, setIsRecording] = useState(false);
+  const [transcript, setTranscript] = useState("");
+  const [language, setLanguage] = useState("Bhojpuri");
+  
+  // Dummy dashboard data
+  const income = 850;
+  const chargeCost = 120;
+  const healthPercent = 88;
+
+  const handleVoiceSearch = () => {
+    setIsRecording(true);
+    // Simulate recording delay
+    setTimeout(() => {
+      setIsRecording(false);
+      setTranscript("Varanasi ghat ke pass sabse sasta charge kahan ba?");
+      // Speak back
+      setTimeout(() => {
+        alert("Audio Response: Aas pass sabse sasta charge point Dashashwamedh Ghat ke piche 10 rupaye unit hai.");
+      }, 1000);
+    }, 2500);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f4fff7] via-white to-[#e8fff0]">
-
-      {/* HERO */}
-      <section className="relative pt-12 pb-10 px-6 overflow-hidden">
-
-        {/* GLOW BACKGROUND */}
-        <div className="absolute top-20 left-20 w-72 h-72 bg-green-300/20 blur-[120px] rounded-full"></div>
-        <div className="absolute bottom-10 right-10 w-72 h-72 bg-green-200/30 blur-[120px] rounded-full"></div>
-
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-
-          {/* LEFT SIDE */}
-          <motion.div
-            initial={{ opacity: 0, x: -60 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-green-100 text-green-700 font-semibold mb-6">
-              <BatteryCharging size={18} />
-              ReChakra Energy Network
+    <div className="min-h-screen bg-gradient-to-br from-[#fffdf5] via-white to-[#f5fff8] pt-16">
+      {/* Mobile-first constraints for realistic feel */}
+      <div className="max-w-md mx-auto min-h-[calc(100vh-4rem)] bg-white shadow-2xl overflow-hidden relative border-x border-gray-100">
+        
+        {/* Header */}
+        <div className="bg-green-600 text-white p-6 rounded-b-[30px] shadow-lg relative z-10">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-black tracking-wide">ReChakra</h1>
+              <p className="text-green-100 text-sm mt-1">Bharat ka E-Rickshaw App</p>
             </div>
+            <select 
+              value={language} 
+              onChange={(e) => setLanguage(e.target.value)}
+              className="bg-green-700 text-white text-sm rounded-xl px-3 py-2 border-none outline-none font-medium cursor-pointer"
+            >
+              <option>Bhojpuri</option>
+              <option>Hindi</option>
+              <option>English</option>
+            </select>
+          </div>
+        </div>
 
-            <h1 className="text-5xl md:text-7xl font-bold leading-tight text-gray-900">
-              Smart Battery
-              <span className="text-green-600"> Swapping</span>
-              <br />
-              For Bharat ⚡
-            </h1>
+        <div className="p-6 space-y-6 pb-24">
+          
+          {/* Voice Search Widget */}
+          <div className="bg-green-50 rounded-[32px] p-8 text-center border border-green-100 shadow-sm relative overflow-hidden">
+            <h2 className="text-gray-800 font-bold text-xl mb-6">
+              {language === 'Bhojpuri' ? 'Boliye, kahan charge karna ba?' : 'Boliye, kahan charge karna hai?'}
+            </h2>
+            
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={handleVoiceSearch}
+              className={`w-28 h-28 rounded-full flex items-center justify-center mx-auto shadow-xl transition-all ${
+                isRecording ? 'bg-red-500 animate-pulse' : 'bg-gradient-to-tr from-green-500 to-green-400'
+              }`}
+            >
+              <Mic size={48} className="text-white" />
+            </motion.button>
+            
+            {transcript && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-6 bg-white p-4 rounded-2xl shadow-sm text-gray-700 font-medium flex items-center gap-3"
+              >
+                <Volume2 className="text-green-500 shrink-0" size={20} />
+                <span className="text-sm">"{transcript}"</span>
+              </motion.div>
+            )}
+          </div>
 
-            <p className="text-gray-600 text-lg mt-8 leading-relaxed max-w-xl">
-              ReChakra powers India's next-generation shared mobility ecosystem
-              with intelligent battery swapping, fleet monitoring,
-              and AI-powered energy optimization.
-            </p>
-
-            {/* BUTTONS */}
-            <div className="flex flex-wrap gap-4 mt-10">
-              <button
-  onClick={() => navigate("/find-and-book")}
-  className="px-8 py-4 bg-green-600 hover:bg-green-700 text-white rounded-2xl font-semibold shadow-xl transition hover:scale-105"
->
-  Find Swap Station
-</button>
-
-              <button className="px-8 py-4 bg-white border border-gray-200 rounded-2xl font-semibold hover:shadow-lg transition">
-                Learn More
-              </button>
-            </div>
-
-            {/* STATS */}
-            <div className="grid grid-cols-3 gap-5 mt-14">
-              <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-5 shadow-lg border border-white">
-                <h3 className="text-3xl font-bold text-green-600">120+</h3>
-                <p className="text-gray-500 mt-1 text-sm">Swap Stations</p>
+          {/* Income Tracker */}
+          <div className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
+            <h3 className="text-gray-500 font-semibold mb-4 flex items-center gap-2">
+              <IndianRupee size={18} /> Aaj ki Kamai vs Kharcha
+            </h3>
+            
+            <div className="flex items-end justify-between">
+              <div>
+                <p className="text-sm text-gray-400">Kamai (Income)</p>
+                <p className="text-3xl font-black text-green-600">₹{income}</p>
               </div>
-
-              <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-5 shadow-lg border border-white">
-                <h3 className="text-3xl font-bold text-green-600">8K+</h3>
-                <p className="text-gray-500 mt-1 text-sm">Daily Swaps</p>
-              </div>
-
-              <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-5 shadow-lg border border-white">
-                <h3 className="text-3xl font-bold text-green-600">99%</h3>
-                <p className="text-gray-500 mt-1 text-sm">Uptime</p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* RIGHT SIDE */}
-          <motion.div
-            initial={{ opacity: 0, x: 60 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="relative"
-          >
-
-            {/* MAIN CARD */}
-            <div className="relative z-20 bg-white/70 backdrop-blur-2xl border border-white rounded-[40px] p-8 shadow-2xl">
-
-              {/* HEADER */}
-              <div className="flex justify-between items-center mb-8">
-                <div>
-                  <p className="text-gray-500 text-sm">
-                    Live Battery Status
-                  </p>
-                  <h2 className="text-2xl font-bold text-gray-900 mt-1">
-                    Fleet Dashboard
-                  </h2>
-                </div>
-
-                <div className="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center">
-                  <BatteryCharging className="text-green-600" />
-                </div>
-              </div>
-
-              {/* BATTERY */}
-              <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-3xl p-6 text-white shadow-xl">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-green-100">Available Batteries</p>
-                    <h3 className="text-5xl font-bold mt-2">248</h3>
-                  </div>
-
-                  <div className="w-28 h-14 border-4 border-white rounded-lg relative">
-                    <div className="absolute top-0 left-0 h-full w-[85%] bg-white rounded-md"></div>
-                    <div className="absolute -right-3 top-4 w-2 h-6 bg-white rounded"></div>
-                  </div>
-                </div>
-              </div>
-
-              {/* FEATURES */}
-              <div className="grid grid-cols-2 gap-5 mt-8">
-                <div className="bg-[#f8fff9] rounded-3xl p-5 border border-green-100">
-                  <MapPin className="text-green-600 mb-3" />
-                  <h3 className="font-bold text-gray-900">Smart Stations</h3>
-                  <p className="text-gray-500 text-sm mt-2">
-                    Real-time station discovery & navigation
-                  </p>
-                </div>
-
-                <div className="bg-[#f8fff9] rounded-3xl p-5 border border-green-100">
-                  <Truck className="text-green-600 mb-3" />
-                  <h3 className="font-bold text-gray-900">Fleet Control</h3>
-                  <p className="text-gray-500 text-sm mt-2">
-                    Monitor commercial EV fleets instantly
-                  </p>
-                </div>
-
-                <div className="bg-[#f8fff9] rounded-3xl p-5 border border-green-100">
-                  <Activity className="text-green-600 mb-3" />
-                  <h3 className="font-bold text-gray-900">Live Analytics</h3>
-                  <p className="text-gray-500 text-sm mt-2">
-                    AI-powered battery health monitoring
-                  </p>
-                </div>
-
-                <div className="bg-[#f8fff9] rounded-3xl p-5 border border-green-100">
-                  <ShieldCheck className="text-green-600 mb-3" />
-                  <h3 className="font-bold text-gray-900">Safe Charging</h3>
-                  <p className="text-gray-500 text-sm mt-2">
-                    Intelligent thermal & voltage protection
-                  </p>
-                </div>
+              <div className="text-right">
+                <p className="text-sm text-gray-400">Kharcha (Charge)</p>
+                <p className="text-2xl font-bold text-red-500">₹{chargeCost}</p>
               </div>
             </div>
+            
+            <div className="w-full bg-gray-100 h-3 rounded-full mt-4 overflow-hidden flex">
+              <div className="bg-green-500 h-full transition-all duration-1000" style={{ width: `${(income/(income+chargeCost))*100}%` }}></div>
+              <div className="bg-red-500 h-full transition-all duration-1000" style={{ width: `${(chargeCost/(income+chargeCost))*100}%` }}></div>
+            </div>
+          </div>
 
-            {/* FLOATING CARD (FIXED) */}
-      
-
-          </motion.div>
+          {/* Battery Health Monitor */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-blue-50 rounded-3xl p-5 border border-blue-100">
+              <Battery className="text-blue-500 mb-2" size={24} />
+              <p className="text-xs text-gray-500 font-medium">Battery Health</p>
+              <p className="text-2xl font-black text-blue-700">{healthPercent}%</p>
+              <p className="text-[10px] text-blue-600 mt-1">Status: Achha (Good)</p>
+            </div>
+            
+            <div className="bg-orange-50 rounded-3xl p-5 border border-orange-100">
+              <Activity className="text-orange-500 mb-2" size={24} />
+              <p className="text-xs text-gray-500 font-medium">Charge Cycles</p>
+              <p className="text-2xl font-black text-orange-700">412</p>
+              <p className="text-[10px] text-orange-600 mt-1">Est. 800 remaining</p>
+            </div>
+          </div>
 
         </div>
-      </section>
+
+        {/* Bottom Nav */}
+        <div className="absolute bottom-0 w-full bg-white border-t border-gray-100 p-4 flex justify-around text-gray-400">
+          <button className="flex flex-col items-center text-green-600">
+            <MapPin size={24} />
+            <span className="text-[10px] font-medium mt-1">Map</span>
+          </button>
+          <button className="flex flex-col items-center hover:text-green-600 transition">
+            <IndianRupee size={24} />
+            <span className="text-[10px] font-medium mt-1">Khata</span>
+          </button>
+          <button className="flex flex-col items-center hover:text-green-600 transition">
+            <Settings size={24} />
+            <span className="text-[10px] font-medium mt-1">Settings</span>
+          </button>
+        </div>
+
+      </div>
     </div>
   );
 };

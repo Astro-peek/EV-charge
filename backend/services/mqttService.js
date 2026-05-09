@@ -40,4 +40,22 @@ client.on('message', async (topic, message) => {
     }
 });
 
-module.exports = client;
+/**
+ * Send an ON/OFF command to a specific Smart Plug
+ * @param {string} stationId 
+ * @param {string} action 'ON' or 'OFF'
+ * @param {string} bookingId 
+ */
+const sendCommandToPlug = (stationId, action, bookingId) => {
+    const topic = `ev/station/${stationId}/command`;
+    const payload = JSON.stringify({ action, bookingId, timestamp: new Date().toISOString() });
+    client.publish(topic, payload, (err) => {
+        if (err) {
+            console.error(`Failed to send ${action} command to ${stationId}:`, err);
+        } else {
+            console.log(`📡 Sent ${action} command to Station ${stationId}`);
+        }
+    });
+};
+
+module.exports = { client, sendCommandToPlug };

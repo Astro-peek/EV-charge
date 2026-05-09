@@ -7,6 +7,8 @@ import {
   Zap,
   QrCode,
   CheckCircle,
+  Download,
+  RotateCcw
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
@@ -52,6 +54,30 @@ const VehicleProtocolPage = () => {
     }
 
     setGenerated(true);
+  };
+
+  const resetForm = () => {
+    setVehicleData({
+      owner: "",
+      vehicle: "",
+      connector: "CCS2",
+      battery: "",
+      number: "",
+    });
+    setGenerated(false);
+  };
+
+  const downloadQR = () => {
+    const svg = document.getElementById("qr-code-svg");
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${vehicleData.number || "vehicle"}_qr.svg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -149,84 +175,86 @@ const VehicleProtocolPage = () => {
               </p>
             </div>
 
-            {/* FORM */}
+            {/* FORM OR RESULT */}
             <div className="p-8 space-y-5">
 
-              <input
-                type="text"
-                name="owner"
-                placeholder="Owner Name"
-                value={vehicleData.owner}
-                onChange={handleChange}
-                className="w-full p-4 rounded-2xl border border-gray-200 outline-none focus:ring-2 focus:ring-green-500"
-              />
+              {!generated ? (
+                <>
+                  <input
+                    type="text"
+                    name="owner"
+                    placeholder="Owner Name"
+                    value={vehicleData.owner}
+                    onChange={handleChange}
+                    className="w-full p-4 rounded-2xl border border-gray-200 outline-none focus:ring-2 focus:ring-green-500"
+                  />
 
-              <input
-                type="text"
-                name="vehicle"
-                placeholder="Vehicle Model"
-                value={vehicleData.vehicle}
-                onChange={handleChange}
-                className="w-full p-4 rounded-2xl border border-gray-200 outline-none focus:ring-2 focus:ring-green-500"
-              />
+                  <input
+                    type="text"
+                    name="vehicle"
+                    placeholder="Vehicle Model"
+                    value={vehicleData.vehicle}
+                    onChange={handleChange}
+                    className="w-full p-4 rounded-2xl border border-gray-200 outline-none focus:ring-2 focus:ring-green-500"
+                  />
 
-              <input
-                type="text"
-                name="number"
-                placeholder="Vehicle Number"
-                value={vehicleData.number}
-                onChange={handleChange}
-                className="w-full p-4 rounded-2xl border border-gray-200 outline-none focus:ring-2 focus:ring-green-500"
-              />
+                  <input
+                    type="text"
+                    name="number"
+                    placeholder="Vehicle Number"
+                    value={vehicleData.number}
+                    onChange={handleChange}
+                    className="w-full p-4 rounded-2xl border border-gray-200 outline-none focus:ring-2 focus:ring-green-500"
+                  />
 
-              <select
-                name="connector"
-                value={vehicleData.connector}
-                onChange={handleChange}
-                className="w-full p-4 rounded-2xl border border-gray-200 outline-none focus:ring-2 focus:ring-green-500"
-              >
-                <option>CCS2</option>
-                <option>Type 2</option>
-                <option>CHAdeMO</option>
-              </select>
+                  <select
+                    name="connector"
+                    value={vehicleData.connector}
+                    onChange={handleChange}
+                    className="w-full p-4 rounded-2xl border border-gray-200 outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option>CCS2</option>
+                    <option>Type 2</option>
+                    <option>CHAdeMO</option>
+                  </select>
 
-              <input
-                type="text"
-                name="battery"
-                placeholder="Battery Capacity (e.g. 40 kWh)"
-                value={vehicleData.battery}
-                onChange={handleChange}
-                className="w-full p-4 rounded-2xl border border-gray-200 outline-none focus:ring-2 focus:ring-green-500"
-              />
+                  <input
+                    type="text"
+                    name="battery"
+                    placeholder="Battery Capacity (e.g. 40 kWh)"
+                    value={vehicleData.battery}
+                    onChange={handleChange}
+                    className="w-full p-4 rounded-2xl border border-gray-200 outline-none focus:ring-2 focus:ring-green-500"
+                  />
 
-              <button
-                onClick={handleGenerate}
-                className="w-full bg-green-500 hover:bg-green-600 transition text-white font-bold py-4 rounded-2xl text-lg"
-              >
-                Generate Vehicle QR
-              </button>
-
-              {/* QR RESULT */}
-              {generated && (
+                  <button
+                    onClick={handleGenerate}
+                    className="w-full bg-green-500 hover:bg-green-600 transition text-white font-bold py-4 rounded-2xl text-lg"
+                  >
+                    Generate Vehicle QR
+                  </button>
+                </>
+              ) : (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-8 bg-gradient-to-br from-green-50 to-white rounded-3xl p-8 border border-green-100"
+                  className="bg-gradient-to-br from-green-50 to-white rounded-3xl p-8 border border-green-100"
                 >
 
                   <div className="flex justify-center">
                     <div className="bg-white p-5 rounded-3xl shadow-lg">
-                     <div className="flex justify-center">
-  <div className="bg-white p-4 rounded-3xl shadow-xl">
-    <QRCodeSVG
-      value={generateQRData()}
-      size={220}
-      bgColor="#ffffff"
-      fgColor="#000000"
-      level="H"
-    />
-  </div>
-</div>
+                      <div className="flex justify-center">
+                        <div className="bg-white p-4 rounded-3xl shadow-xl">
+                          <QRCodeSVG
+                            id="qr-code-svg"
+                            value={generateQRData()}
+                            size={220}
+                            bgColor="#ffffff"
+                            fgColor="#000000"
+                            level="H"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -253,7 +281,7 @@ const VehicleProtocolPage = () => {
                       </span>
                     </div>
 
-                    <div className="flex justify-between">
+                    <div className="flex justify-between border-b pb-2">
                       <span className="text-gray-500">Fast Charging</span>
                       <span className="font-bold text-green-600 flex items-center gap-2">
                         <CheckCircle size={18} /> Enabled
@@ -261,6 +289,23 @@ const VehicleProtocolPage = () => {
                     </div>
 
                   </div>
+
+                  {/* ACTION BUTTONS */}
+                  <div className="mt-8 grid grid-cols-2 gap-4">
+                    <button
+                      onClick={downloadQR}
+                      className="flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-xl font-medium transition-all"
+                    >
+                      <Download size={18} /> Download
+                    </button>
+                    <button
+                      onClick={resetForm}
+                      className="flex items-center justify-center gap-2 bg-green-100 hover:bg-green-200 text-green-700 py-3 rounded-xl font-medium transition-all"
+                    >
+                      <RotateCcw size={18} /> Register Another
+                    </button>
+                  </div>
+
                 </motion.div>
               )}
 

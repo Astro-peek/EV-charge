@@ -15,8 +15,11 @@ import {
 } from "lucide-react";
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const HostRegistration = () => {
+  const navigate = useNavigate();
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
@@ -32,6 +35,44 @@ const HostRegistration = () => {
       [e.target.name]: e.target.value,
     });
   };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Simulate API call for registration
+    setIsSubmitted(true);
+  };
+
+  if (isSubmitted) {
+    return (
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#f5fff8] py-20 px-6">
+        <div className="absolute inset-0 bg-gradient-to-br from-green-100/50 via-white to-emerald-100/50" />
+        <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-green-400/20 blur-3xl rounded-full -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute bottom-0 right-0 w-[350px] h-[350px] bg-emerald-300/20 blur-3xl rounded-full translate-x-1/3 translate-y-1/3" />
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="relative z-10 text-center max-w-lg mx-auto bg-white/40 backdrop-blur-2xl border border-white/50 p-10 rounded-[40px] shadow-[0_25px_80px_rgba(0,0,0,0.08)]"
+        >
+          <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600 shadow-inner">
+            <CheckCircle2 size={48} />
+          </div>
+          <h2 className="text-3xl font-black text-gray-900 mb-4">Place Registered Successfully!</h2>
+          <p className="text-gray-600 mb-8 leading-relaxed">
+            Thank you for joining the ChargeAnna network. Your charger application has been received and is under review. You'll be notified once it's live!
+          </p>
+          <button
+            onClick={() => navigate('/')}
+            className="w-full bg-green-600 hover:bg-green-700 text-white rounded-2xl py-4 font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-xl hover:shadow-green-600/30 hover:-translate-y-1"
+          >
+            Go Back to Main Page
+            <ArrowRight size={18} />
+          </button>
+        </motion.div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#f5fff8] py-20 px-6">
@@ -136,7 +177,7 @@ const HostRegistration = () => {
             </p>
           </div>
 
-          <form className="mt-8 space-y-5">
+          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
 
             {/* Full Name */}
             <div>
