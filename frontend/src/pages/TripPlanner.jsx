@@ -79,52 +79,227 @@ const TripPlanner = () => {
     setLoading(true);
     try {
       const cityCoords = {
-        "delhi": [28.6139, 77.2090],
-        "mumbai": [19.0760, 72.8777],
-        "bangalore": [12.9716, 77.5946],
+        // Major Metro Cities
+        "delhi": [28.6139, 77.2090], "new delhi": [28.6139, 77.2090],
+        "mumbai": [19.0760, 72.8777], "bombay": [19.0760, 72.8777],
+        "bangalore": [12.9716, 77.5946], "bengaluru": [12.9716, 77.5946],
         "hyderabad": [17.3850, 78.4867],
-        "chennai": [13.0827, 80.2707],
-        "agra": [27.1767, 78.0081],
-        "jaipur": [26.9124, 75.7873],
+        "chennai": [13.0827, 80.2707], "madras": [13.0827, 80.2707],
+        "kolkata": [22.5726, 88.3639], "calcutta": [22.5726, 88.3639],
+        "pune": [18.5204, 73.8567], "poona": [18.5204, 73.8567],
+        "ahmedabad": [23.0225, 72.5714],
+        "surat": [21.1702, 72.8311],
+
+        // Madhya Pradesh
         "bhopal": [23.2599, 77.4126],
         "indore": [22.7196, 75.8577],
-        "pune": [18.5204, 73.8567],
+        "jabalpur": [23.1815, 79.9864],
+        "gwalior": [26.2183, 78.1828],
+        "ujjain": [23.1793, 75.7849],
+        "sagar": [23.8388, 78.7378],
+        "rewa": [24.5362, 81.3037],
+        "satna": [24.6005, 80.8322],
+        "khajuraho": [24.8518, 79.9199],
+        "orchha": [25.3518, 78.6400],
+        "hoshangabad": [22.7519, 77.7265],
+        "itarsi": [22.6150, 77.7650],
+        "damoh": [23.8333, 79.4333],
+        "chhatarpur": [24.9173, 79.5940],
+        "tikamgarh": [24.7426, 78.8302],
+        "vidisha": [23.5251, 77.8143],
+        "raisen": [23.3300, 77.7900],
+        "mandsaur": [24.0773, 75.0680],
+        "ratlam": [23.3315, 75.0367],
+        "morena": [26.4967, 77.9969],
+        "bhind": [26.5593, 78.7870],
+        "shivpuri": [25.4279, 77.6643],
+        "dewas": [22.9676, 76.0512],
+        "chhindwara": [22.0573, 78.9389],
+        "betul": [21.9016, 77.8972],
+        "khandwa": [21.8270, 76.3520],
+        "burhanpur": [21.3037, 76.2297],
+        "katni": [23.8303, 80.3963],
+        "panna": [24.7179, 80.1858],
+        "banda": [25.4780, 80.3370],
+
+        // Uttar Pradesh
+        "lucknow": [26.8467, 80.9462],
+        "kanpur": [26.4499, 80.3319],
+        "agra": [27.1767, 78.0081],
+        "varanasi": [25.3176, 82.9739], "banaras": [25.3176, 82.9739],
+        "allahabad": [25.4358, 81.8463], "prayagraj": [25.4358, 81.8463],
+        "meerut": [28.9845, 77.7064],
+        "ghaziabad": [28.6692, 77.4538],
+        "noida": [28.5355, 77.3910],
+        "mathura": [27.4924, 77.6737],
+        "vrindavan": [27.5794, 77.6961],
+        "ayodhya": [26.7922, 82.1998],
+        "faizabad": [26.7922, 82.1998],
+        "gorakhpur": [26.7605, 83.3731],
+        "moradabad": [28.8386, 78.7733],
+        "aligarh": [27.8974, 78.0880],
+        "bareilly": [28.3670, 79.4304],
+        "jhansi": [25.4484, 78.5685],
+        "ghazipur": [25.5780, 83.5764],
+        "rampur": [28.7892, 79.0048],
+        "muzaffarnagar": [29.4726, 77.7085],
+        "firozabad": [27.1591, 78.3957],
+        "saharanpur": [29.9641, 77.5461],
+        "sultanpur": [26.2617, 82.0710],
+
+        // Rajasthan
+        "jaipur": [26.9124, 75.7873],
+        "jodhpur": [26.2389, 73.0243],
+        "udaipur": [24.5854, 73.7125],
+        "kota": [25.2138, 75.8648],
+        "bikaner": [28.0229, 73.3119],
+        "ajmer": [26.4499, 74.6399],
+        "bharatpur": [27.2152, 77.4938],
+        "alwar": [27.5530, 76.6346],
+        "sikar": [27.6094, 75.1399],
+        "pushkar": [26.4898, 74.5511],
+        "mount abu": [24.5926, 72.7156],
+        "chittorgarh": [24.8887, 74.6269],
+
+        // Maharashtra
         "nagpur": [21.1458, 79.0882],
+        "nashik": [19.9975, 73.7898],
+        "aurangabad": [19.8762, 75.3433],
+        "solapur": [17.6599, 75.9064],
+        "kolhapur": [16.7050, 74.2433],
+        "amravati": [20.9374, 77.7796],
+        "nanded": [19.1383, 77.3210],
+        "jalgaon": [21.0077, 75.5626],
+        "akola": [20.7002, 77.0082],
+        "latur": [18.4088, 76.5604],
+
+        // Gujarat
+        "vadodara": [22.3072, 73.1812], "baroda": [22.3072, 73.1812],
+        "rajkot": [22.3039, 70.8022],
+        "bhavnagar": [21.7645, 72.1519],
+        "jamnagar": [22.4707, 70.0577],
+        "anand": [22.5645, 72.9289],
+        "gandhinagar": [23.2156, 72.6369],
+        "dwarka": [22.2394, 68.9678],
+        "somnath": [20.8879, 70.4015],
+
+        // Punjab & Haryana
+        "amritsar": [31.6340, 74.8723],
+        "ludhiana": [30.9010, 75.8573],
+        "jalandhar": [31.3260, 75.5762],
+        "chandigarh": [30.7333, 76.7794],
+        "patiala": [30.3398, 76.3869],
+        "bathinda": [30.2110, 74.9455],
+        "gurugram": [28.4595, 77.0266], "gurgaon": [28.4595, 77.0266],
+        "faridabad": [28.4089, 77.3178],
+        "panipat": [29.3909, 76.9635],
+        "ambala": [30.3782, 76.7767],
+        "kurukshetra": [29.9695, 76.8783],
+
+        // Bihar & Jharkhand
+        "patna": [25.5941, 85.1376],
+        "gaya": [24.7955, 85.0002],
+        "muzaffarpur": [26.1197, 85.3910],
+        "ranchi": [23.3441, 85.3096],
+        "jamshedpur": [22.8046, 86.2029],
+        "dhanbad": [23.7957, 86.4304],
+        "bokaro": [23.6693, 86.1511],
+
+        // Odisha
+        "bhubaneswar": [20.2961, 85.8245],
+        "cuttack": [20.4625, 85.8828],
+        "puri": [19.8135, 85.8312],
+        "rourkela": [22.2604, 84.8536],
+
+        // Chhattisgarh
+        "raipur": [21.2514, 81.6296],
+        "bilaspur": [22.0797, 82.1391],
+        "durg": [21.1904, 81.2849],
+        "jagdalpur": [19.0699, 82.0182],
+
+        // Himachal Pradesh & Uttarakhand
+        "shimla": [31.1048, 77.1734],
+        "manali": [32.2396, 77.1887],
+        "dharamshala": [32.2190, 76.3234],
+        "dehradun": [30.3165, 78.0322],
+        "haridwar": [29.9457, 78.1642],
+        "rishikesh": [30.0869, 78.2676],
+        "nainital": [29.3803, 79.4636],
+        "mussoorie": [30.4598, 78.0664],
+
+        // South India
+        "mysuru": [12.2958, 76.6394], "mysore": [12.2958, 76.6394],
+        "mangaluru": [12.9141, 74.8560], "mangalore": [12.9141, 74.8560],
+        "hubli": [15.3647, 75.1240], "dharwad": [15.4589, 75.0078],
+        "belgaum": [15.8497, 74.4977], "belagavi": [15.8497, 74.4977],
+        "coimbatore": [11.0168, 76.9558],
+        "madurai": [9.9252, 78.1198],
+        "tiruchirappalli": [10.7905, 78.7047], "trichy": [10.7905, 78.7047],
+        "tirupati": [13.6288, 79.4192],
+        "vijayawada": [16.5062, 80.6480],
+        "visakhapatnam": [17.6868, 83.2185], "vizag": [17.6868, 83.2185],
+        "warangal": [17.9784, 79.5941],
+        "thiruvananthapuram": [8.5241, 76.9366], "trivandrum": [8.5241, 76.9366],
+        "kochi": [9.9312, 76.2673], "cochin": [9.9312, 76.2673],
+        "kozhikode": [11.2588, 75.7804], "calicut": [11.2588, 75.7804],
+
+        // Northeast
+        "guwahati": [26.1445, 91.7362],
+        "shillong": [25.5788, 91.8933],
+        "imphal": [24.8170, 93.9368],
+        "agartala": [23.8315, 91.2868],
+        "itanagar": [27.0844, 93.6053],
+        "aizawl": [23.7307, 92.7173],
+        "kohima": [25.6751, 94.1086],
+        "gangtok": [27.3389, 88.6065],
+
+        // Jammu & Kashmir
+        "srinagar": [34.0837, 74.7973],
+        "jammu": [32.7266, 74.8570],
+        "leh": [34.1526, 77.5771],
       };
 
-      let start = userLocation;
+      let start = userLocation ? [...userLocation] : null;
       if (!start || (from && from.toLowerCase() !== "my current location")) {
-        const startCity = cityCoords[from.toLowerCase()];
+        const fromKey = from.toLowerCase().trim();
+        const startCity = cityCoords[fromKey];
         if (startCity) {
           start = startCity;
         } else {
           try {
-            const resStart = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${from}`);
+            const resStart = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(from + ", India")}&limit=1`);
             const dataStart = await resStart.json();
             if (dataStart && dataStart.length > 0) {
               start = [parseFloat(dataStart[0].lat), parseFloat(dataStart[0].lon)];
             } else {
-              start = cityCoords["delhi"];
+              throw new Error(`Could not geocode start: "${from}"`);
             }
           } catch (e) {
-            start = cityCoords["delhi"];
+            alert(`Could not find location: "${from}". Please try a different name.`);
+            setLoading(false);
+            return;
           }
         }
       }
       
-      let end = cityCoords["mumbai"];
-      const endCity = cityCoords[to.toLowerCase()];
+      let end = null;
+      const toKey = to.toLowerCase().trim();
+      const endCity = cityCoords[toKey];
       if (endCity) {
         end = endCity;
       } else {
         try {
-          const resEnd = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${to}`);
+          const resEnd = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(to + ", India")}&limit=1`);
           const dataEnd = await resEnd.json();
           if (dataEnd && dataEnd.length > 0) {
             end = [parseFloat(dataEnd[0].lat), parseFloat(dataEnd[0].lon)];
+          } else {
+            throw new Error(`Could not geocode destination: "${to}"`);
           }
         } catch (e) {
-          end = cityCoords["mumbai"];
+          alert(`Could not find destination: "${to}". Please try a different name.`);
+          setLoading(false);
+          return;
         }
       }
 
@@ -134,7 +309,7 @@ const TripPlanner = () => {
         startLng: start[1],
         endLat: end[0],
         endLng: end[1],
-        vehicleRangeKm: 350,
+        vehicleRangeKm: selectedVehicle.rangeKm,
         currentChargePct: parseInt(battery)
       });
 
@@ -142,8 +317,10 @@ const TripPlanner = () => {
       setEndCoords(end);
       
       // 3. Fetch Road-accurate coordinates from OSRM
-      const points = [start, ...res.data.chargingStops.filter(s => s.lat).map(s => [s.lat, s.lng]), end];
-      const waypoints = points.map(p => `${p[1]},${p[0]}`).join(';');
+      const chargingStops = res.data.chargingStops || [];
+      const validStops = chargingStops.filter(s => s && s.lat && s.lng);
+      const points = [start, ...validStops.map(s => [s.lat, s.lng]), end];
+      const waypoints = points.filter(p => p && p[0] && p[1]).map(p => `${p[1]},${p[0]}`).join(';');
       const osrmRes = await fetch(`https://router.project-osrm.org/route/v1/driving/${waypoints}?overview=full&geometries=geojson`);
       const osrmData = await osrmRes.json();
       
@@ -188,11 +365,12 @@ const TripPlanner = () => {
   };
 
   const vehicles = [
-    { name: "Nexon EV", range: "312km" },
-    { name: "MG ZS EV", range: "461km" },
-    { name: "BYD Atto 3", range: "521km" },
-    { name: "Tiago EV", range: "250km" },
+    { name: "Nexon EV", range: "312km", rangeKm: 312 },
+    { name: "MG ZS EV", range: "461km", rangeKm: 461 },
+    { name: "BYD Atto 3", range: "521km", rangeKm: 521 },
+    { name: "Tiago EV", range: "250km", rangeKm: 250 },
   ];
+  const selectedVehicle = vehicles.find(v => v.name === vehicle) || vehicles[0];
 
   return (
     <div className="min-h-screen bg-slate-50 pt-6 pb-20 overflow-x-hidden">
@@ -361,7 +539,7 @@ const TripPlanner = () => {
                 <MapRecenter center={routeCoordinates.length > 0 ? routeCoordinates[0] : userLocation} />
 
                 {/* USER LOCATION */}
-                {userLocation && (
+                {userLocation && userLocation[0] && userLocation[1] && (
                   <Marker position={userLocation} icon={userIcon}>
                     <Popup className="custom-popup">
                       <p className="font-black">You are here</p>
@@ -370,14 +548,14 @@ const TripPlanner = () => {
                 )}
 
                 {/* START POINT (If not my location) */}
-                {routeCoordinates.length > 0 && from.toLowerCase() !== "my current location" && (
+                {routeCoordinates.length > 0 && routeCoordinates[0] && from.toLowerCase() !== "my current location" && (
                   <Marker position={routeCoordinates[0]}>
                     <Popup><p className="font-black">Start: {from}</p></Popup>
                   </Marker>
                 )}
 
                 {/* Unselected Network Stations */}
-                {result?.allStations?.filter(s => !result.chargingStops.some(stop => stop.id === s.id)).map((station, i) => (
+                {result?.allStations?.filter(s => s && s.lat && s.lng && !(result?.chargingStops || []).some(stop => stop.id === s.id)).map((station, i) => (
                   <Marker key={`network-${i}`} position={[station.lat, station.lng]} icon={unselectedStationIcon}>
                     <Popup className="premium-popup">
                       <div className="p-2 min-w-[100px]">
@@ -390,7 +568,7 @@ const TripPlanner = () => {
 
                 {/* Calculated Route Charging Stops */}
                 {result?.chargingStops?.map((stop, i) => {
-                  if (stop.warning || !stop.lat) return null;
+                  if (!stop || stop.warning || !stop.lat || !stop.lng) return null;
                   return (
                     <Marker key={`stop-${i}`} position={[stop.lat, stop.lng]} icon={premiumStationIcon}>
                       <Popup className="premium-popup">
@@ -420,7 +598,7 @@ const TripPlanner = () => {
                 })}
 
                 {/* DESTINATION */}
-                {routeCoordinates.length > 1 && (
+                {routeCoordinates.length > 1 && routeCoordinates[routeCoordinates.length - 1] && (
                   <Marker position={routeCoordinates[routeCoordinates.length - 1]}>
                     <Popup><p className="font-black">Destination: {to}</p></Popup>
                   </Marker>
@@ -472,7 +650,7 @@ const TripPlanner = () => {
                     ))}
                   </div>
 
-                  {result.chargingStops.length > 0 ? (
+                  {result?.chargingStops?.length > 0 ? (
                     <div className="mt-8 pt-8 border-t border-white/10">
                       <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">Charging Schedule</h4>
                       <div className="space-y-4">
