@@ -1,14 +1,14 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import QRCode from "react-qr-code";
 import {
   Car,
   BatteryCharging,
   Zap,
   QrCode,
-  CheckCircle2,
+  CheckCircle,
 } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 
 const VehicleProtocolPage = () => {
   const [vehicleData, setVehicleData] = useState({
@@ -218,7 +218,7 @@ const VehicleProtocolPage = () => {
                     <div className="bg-white p-5 rounded-3xl shadow-lg">
                      <div className="flex justify-center">
   <div className="bg-white p-4 rounded-3xl shadow-xl">
-    <QRCode
+    <QRCodeSVG
       value={generateQRData()}
       size={220}
       bgColor="#ffffff"
@@ -256,7 +256,7 @@ const VehicleProtocolPage = () => {
                     <div className="flex justify-between">
                       <span className="text-gray-500">Fast Charging</span>
                       <span className="font-bold text-green-600 flex items-center gap-2">
-                        <CheckCircle2 size={18} /> Enabled
+                        <CheckCircle size={18} /> Enabled
                       </span>
                     </div>
 

@@ -601,3 +601,18 @@ enum one_time_token_type {
 
   @@schema("auth")
 }
+
+model VehicleProfile {
+  id               String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  reg_number       String   @unique
+  model            String?
+  connector_type   String?
+  battery_capacity String?
+  max_voltage      String?
+  type             String?
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("vehicle_profiles")
+  @@schema("public")
+}
