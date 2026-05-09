@@ -448,9 +448,14 @@ const BecomeHost = () => {
                   className="w-full border border-[#ddd7cf] rounded-2xl px-5 py-4 text-lg outline-none focus:ring-2 focus:ring-green-500"
                 >
                   <option>Dhaba</option>
+                  <option>Hotel</option>
+                  <option>Restaurant</option>
                   <option>Home</option>
                   <option>Shop</option>
                   <option>Parking Space</option>
+                  <option>Petrol Pump</option>
+                  <option>Highway Stop</option>
+                  <option>Office / Commercial</option>
                 </select>
               </div>
 

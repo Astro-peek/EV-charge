@@ -1,0 +1,24 @@
+{
+  "name": "ev-charge-os-monorepo",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "cd backend && npx prisma generate && cd ../frontend && npm install && npm run build",
+    "install-all": "npm install --prefix backend && npm install --prefix frontend"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.21.0",
+    "@google/generative-ai": "^0.24.1",
+    "@prisma/client": "^6.19.3",
+    "axios": "^1.16.0",
+    "bullmq": "^5.7.8",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "ioredis": "^5.4.1",
+    "mongoose": "^8.3.2",
+    "mqtt": "^5.15.1",
+    "pdfkit": "^0.18.0",
+    "razorpay": "^2.9.6",
+    "prisma": "^6.19.3"
+  }
+}
