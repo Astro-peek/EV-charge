@@ -6,24 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 // Middleware
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (Postman, curl, server-to-server)
-    if (!origin) return callback(null, true);
-    // Allow all Vercel deployments and localhost
-    const allowed = [
-      /\.vercel\.app$/,
-      /localhost/,
-      /127\.0\.0\.1/
-    ];
-    if (allowed.some(pattern => pattern.test(origin))) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json());
 
 // No manual DB connection needed for Prisma (auto-connects)
