@@ -83,16 +83,24 @@ const FindAndBook = () => {
       try {
         const res = await stationService.getStations();
         // Enrich data with premium details if missing
-        const enriched = res.data.map((s, idx) => ({
-          ...s,
-          rating: (4 + Math.random()).toFixed(1),
-          reviews: Math.floor(Math.random() * 200) + 50,
-          image: idx % 2 === 0 ? "/assets/station1.png" : "/assets/station2.png",
-          amenities: ["Wifi", "Coffee", "Parking", "Washroom"].slice(0, 2 + Math.floor(Math.random() * 3)),
-          power: s.power || (idx % 2 === 0 ? "60kW DC" : "22kW AC"),
-          connector_types: s.connector_types?.length ? s.connector_types : ["CCS2", "Type 2"],
-          price_per_unit: s.price_per_unit || 12.50 // Fallback price
-        }));
+        const enriched = res.data.map((s, idx) => {
+          // Fallback coordinates if missing (e.g., newly registered stations)
+          const lat = s.lat || 28.6139 + (Math.random() - 0.5) * 0.1;
+          const lng = s.lng || 77.2090 + (Math.random() - 0.5) * 0.1;
+
+          return {
+            ...s,
+            lat,
+            lng,
+            rating: (4 + Math.random()).toFixed(1),
+            reviews: Math.floor(Math.random() * 200) + 50,
+            image: idx % 2 === 0 ? "/assets/station1.png" : "/assets/station2.png",
+            amenities: ["Wifi", "Coffee", "Parking", "Washroom"].slice(0, 2 + Math.floor(Math.random() * 3)),
+            power: s.power || (idx % 2 === 0 ? "60kW DC" : "22kW AC"),
+            connector_types: s.connector_types?.length ? s.connector_types : ["CCS2", "Type 2"],
+            price_per_unit: s.price_per_unit || 12.50 // Fallback price
+          };
+        });
         setStations(enriched);
 
         // Fetch wait times + occupancy for all stations in background

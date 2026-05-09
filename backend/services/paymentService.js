@@ -37,4 +37,42 @@ const verifyPayment = (razorpay_order_id, razorpay_payment_id, razorpay_signatur
     return expectedSignature === razorpay_signature;
 };
 
-module.exports = { createOrder, verifyPayment };
+/**
+ * Create a Razorpay payment link for a booking (UPI focused).
+ * @param {number} amountInRupees
+ * @param {string} bookingId
+ * @param {string} userPhone
+ * @param {string} userEmail
+ * @param {string} description
+ */
+const createPaymentLink = async (amountInRupees, bookingId, userPhone, userEmail, description = 'ChargeAnna P2P EV Charging Session') => {
+    const options = {
+        amount: Math.round(amountInRupees * 100),
+        currency: 'INR',
+        accept_partial: false,
+        reference_id: bookingId,
+        description: description,
+        customer: {
+            contact: userPhone || '+919999999999', // Ensure valid phone format or dummy
+            email: userEmail || 'user@example.com'
+        },
+        notify: {
+            sms: true,
+            email: true
+        },
+        reminder_enable: true,
+        notes: {
+            bookingId: bookingId
+        }
+    };
+    
+    try {
+        const paymentLink = await razorpay.paymentLink.create(options);
+        return paymentLink;
+    } catch (error) {
+        console.error("Razorpay Payment Link Creation Error:", error);
+        throw error;
+    }
+};
+
+module.exports = { createOrder, verifyPayment, createPaymentLink };
