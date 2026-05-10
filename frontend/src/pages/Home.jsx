@@ -2,10 +2,13 @@ import Hero from "../components/Hero/Hero";
 import ChargeAnna from "../components/ChargeAnna/ChargeAnna";
 import VehicleID from "../components/VehicleID/VehicleID";
 import ChargeSaathi from "../components/ChargeSaathi/ChargeSaathi";
+import InstallAppButton from "../components/common/InstallAppButton";
 
 const Home = () => {
   return (
     <div className="relative overflow-hidden">
+      
+      <InstallAppButton />
 
       {/* 🔥 BACKGROUND GLOW EFFECT */}
       <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-green-300 opacity-20 blur-3xl rounded-full"></div>
