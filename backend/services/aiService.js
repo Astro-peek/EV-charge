@@ -13,11 +13,10 @@ const orchestrateQuery = async (query) => {
       You are the EV Charge OS Orchestrator. 
       Analyze the user query (which might be in English, Hindi, Bhojpuri, or other Indian languages).
       
-      Route it to one of these 4 features:
+      Route it to one of these 3 features:
       1. ChargeNest (P2P Charging/Listing)
       2. VehicleID (Compatibility/Registration lookup)
       3. ChargeSaathi (Highway Trip Planning)
-      4. ReChakra (E-Rickshaw/Regional/General help)
 
       Respond ONLY in valid JSON format:
       {

@@ -13,7 +13,6 @@ const Navbar = () => {
     { name: "ChargeNest", path: "/become-host" },
     { name: "Vehicle ID", path: "/vehicle-id" },
     { name: "Book Slot", path: "/book-slot" },
-    { name: "ReChakra", path: "/rechakra" },
   ];
 
   return (

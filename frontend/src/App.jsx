@@ -17,7 +17,6 @@ import HostDashboard from "./pages/HostDashboard";
 import ChargeNestPage from "./pages/ChargeNestPage";
 import ChargeSaathiPage from "./pages/ChargeSaathiPage";
 import VehicleProtocolPage from "./pages/VehicleProtocolPage";
-import ReChakraPage from "./pages/ReChakraPage";
 
 import FindAndBook from "./pages/FindAndBook";
 
@@ -34,7 +33,6 @@ function App() {
         <Route path="/charge-anna" element={<ChargeNestPage />} />
         <Route path="/charge-saathi" element={<ChargeSaathiPage />} />
         <Route path="/vehicle-id" element={<VehicleProtocolPage />} />
-        <Route path="/rechakra" element={<ReChakraPage />} />
         <Route path="/book-slot" element={<FindAndBook />} />
 
         {/* Protected User Dashboard */}

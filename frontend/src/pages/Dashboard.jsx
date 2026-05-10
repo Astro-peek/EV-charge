@@ -105,12 +105,7 @@ const Dashboard = () => {
           >
             🗺️ Plan Trip
           </Button>
-          <Button
-            onClick={() => navigate("/rechakra")}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 h-24 text-lg"
-          >
-            🔋 Battery Swap
-          </Button>
+
         </div>
       </div>
 

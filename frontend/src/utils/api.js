@@ -87,11 +87,4 @@ export const hostService = {
   deleteStation: (stationId) => api.delete(`/stations/${stationId}`),
 };
 
-export const rechakraService = {
-  voiceSearch: (data) => api.post("/rechakra/voice-search", data),
-  getDashboard: (driverId) => api.get(`/rechakra/dashboard/${driverId}`),
-  logIncome: (data) => api.post("/rechakra/income", data),
-  getBatteryCycle: (vehicle_id) => api.post("/rechakra/battery-cycle", { vehicle_id }),
-};
-
 export default api;

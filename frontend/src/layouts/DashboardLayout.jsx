@@ -5,7 +5,6 @@ import {
   Home,
   Map,
   Calendar,
-  BatteryCharging,
   LogOut,
   Bell,
   User,
@@ -25,7 +24,6 @@ const DashboardLayout = ({ children }) => {
     { name: "Dashboard", icon: Home, path: "/dashboard" },
     { name: "Trip Planner", icon: Map, path: "/trip-planner" },
     { name: "Book Slot", icon: Calendar, path: "/book-slot" },
-    { name: "ReChakra", icon: BatteryCharging, path: "/rechakra" },
   ];
 
   return (
