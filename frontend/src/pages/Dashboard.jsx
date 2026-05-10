@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Map, Zap } from "lucide-react";
+import { Calendar, Map, Zap, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 import Card from "../components/common/Card";
@@ -10,7 +10,7 @@ import { useAuth } from "../context/AuthContext";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -31,8 +31,30 @@ const Dashboard = () => {
     }
   }, [user]);
 
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
+
   return (
     <DashboardLayout>
+      {/* 🔸 HEADER / LOGOUT */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+        <div>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+            Welcome, {user?.name || "User"}
+          </h2>
+          <p className="text-gray-500 mt-1">Manage your bookings and account settings</p>
+        </div>
+        <Button
+          onClick={handleLogout}
+          className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 flex items-center gap-2"
+        >
+          <LogOut size={18} />
+          Logout
+        </Button>
+      </div>
+
       {/* 🔸 STATS */}
       <div className="grid md:grid-cols-3 gap-6">
         <Card className="flex items-center gap-4">
