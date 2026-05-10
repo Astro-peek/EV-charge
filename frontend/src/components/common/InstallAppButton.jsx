@@ -3,14 +3,13 @@ import { Download } from 'lucide-react';
 
 const InstallAppButton = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [isInstallable, setIsInstallable] = useState(false);
 
   useEffect(() => {
     // Listen for the event that indicates the PWA can be installed
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault(); // Prevent the default browser install prompt
       setDeferredPrompt(e); // Save the event so we can trigger it later
-      setIsInstallable(true); // Show our custom install button
+      console.log("PWA install prompt is ready!");
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -21,7 +20,10 @@ const InstallAppButton = () => {
   }, []);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+      alert("App can be installed from your browser menu! On Chrome, click the three dots in the top right and select 'Install App' or 'Add to Home screen'. On Safari, click 'Share' and 'Add to Home Screen'.");
+      return;
+    }
 
     // Show the native install prompt
     deferredPrompt.prompt();
@@ -34,11 +36,7 @@ const InstallAppButton = () => {
     
     // We can only use the prompt once, so clear it
     setDeferredPrompt(null);
-    setIsInstallable(false);
   };
-
-  // If the app is already installed or not supported, don't show the button
-  if (!isInstallable) return null;
 
   return (
     <button 
