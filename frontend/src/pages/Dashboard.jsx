@@ -47,8 +47,9 @@ const Dashboard = () => {
           <p className="text-gray-500 mt-1">Manage your bookings and account settings</p>
         </div>
         <Button
+          variant="danger"
           onClick={handleLogout}
-          className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 flex items-center gap-2"
+          className="flex items-center gap-2"
         >
           <LogOut size={18} />
           Logout
