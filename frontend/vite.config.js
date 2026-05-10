@@ -8,15 +8,19 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: 'auto',
       devOptions: {
         enabled: true
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'ChargeAnna — Smart EV Charging',
-        short_name: 'ChargeAnna',
+        name: 'ChargeNest — Smart EV Charging',
+        short_name: 'ChargeNest',
         description: 'Smart EV Trip Planner and Charging Station Finder',
         theme_color: '#10b981',
+        background_color: '#ffffff',
+        display: 'standalone',
+        start_url: '/',
         icons: [
           {
             src: 'pwa-192x192.png',

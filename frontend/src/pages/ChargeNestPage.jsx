@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Zap, IndianRupee, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const ChargeAnnaPage = () => {
+const ChargeNestPage = () => {
   const navigate = useNavigate();
 
   return (
@@ -17,7 +17,7 @@ const ChargeAnnaPage = () => {
           className="text-center mb-16"
         >
           <h1 className="text-5xl font-bold text-gray-900">
-            ChargeAnna ⚡
+            ChargeNest ⚡
           </h1>
           <p className="text-gray-600 mt-4">
             Turn your EV charger into a shared resource for nearby drivers.
@@ -69,4 +69,4 @@ const ChargeAnnaPage = () => {
   );
 };
 
-export default ChargeAnnaPage;
+export default ChargeNestPage;

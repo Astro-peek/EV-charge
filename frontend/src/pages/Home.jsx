@@ -1,5 +1,5 @@
 import Hero from "../components/Hero/Hero";
-import ChargeAnna from "../components/ChargeAnna/ChargeAnna";
+import ChargeNest from "../components/ChargeNest/ChargeNest";
 import VehicleID from "../components/VehicleID/VehicleID";
 import ChargeSaathi from "../components/ChargeSaathi/ChargeSaathi";
 import InstallAppButton from "../components/common/InstallAppButton";
@@ -27,7 +27,7 @@ const Home = () => {
         {/* CHARGE ANNA */}
         <section className="bg-white/70 backdrop-blur-md">
           <div className="max-w-7xl mx-auto py-5 px-2">
-            <ChargeAnna />
+            <ChargeNest />
           </div>
         </section>
 

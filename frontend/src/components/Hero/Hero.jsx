@@ -44,10 +44,10 @@ const Hero = () => {
           <div className="mt-10 bg-white/80 backdrop-blur-lg p-6 rounded-3xl shadow-xl space-y-4">
 
             {/* SEARCH BAR */}
-            <div className="bg-white shadow rounded-2xl p-3 flex items-center gap-3">
+            <div className="bg-white shadow rounded-2xl p-3 flex flex-col sm:flex-row items-center gap-3">
 
               {/* FROM */}
-              <div className="flex items-center gap-2 px-3 flex-1">
+              <div className="flex items-center gap-2 px-3 w-full sm:flex-1">
                 <MapPin className="text-primary" size={18} />
                 <input
                   type="text"
@@ -58,10 +58,10 @@ const Hero = () => {
                 />
               </div>
 
-              <div className="w-px h-8 bg-gray-200"></div>
+              <div className="w-full h-px sm:w-px sm:h-8 bg-gray-200"></div>
 
               {/* TO */}
-              <div className="flex items-center gap-2 px-3 flex-1">
+              <div className="flex items-center gap-2 px-3 w-full sm:flex-1">
                 <MapPin className="text-green-500" size={18} />
                 <input
                   type="text"
@@ -72,26 +72,29 @@ const Hero = () => {
                 />
               </div>
 
-              {/* SWAP */}
-              <button
-                onClick={handleSwap}
-                className="p-2 hover:bg-gray-100 rounded-full transition"
-              >
-                <ArrowLeftRight size={18} />
-              </button>
+              {/* SWAP & SEARCH CONTAINER FOR MOBILE */}
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start mt-2 sm:mt-0">
+                {/* SWAP */}
+                <button
+                  onClick={handleSwap}
+                  className="p-2 hover:bg-gray-100 rounded-full transition sm:rotate-0 rotate-90"
+                >
+                  <ArrowLeftRight size={18} />
+                </button>
 
-              {/* SEARCH */}
-              <button
-                onClick={() =>
-                  navigate("/trip-planner", {
-                    state: { from, to },
-                  })
-                }
-                className="bg-primary text-white px-6 py-3 rounded-xl flex items-center gap-2 hover:scale-105 transition"
-              >
-                <Search size={18} />
-                Search
-              </button>
+                {/* SEARCH */}
+                <button
+                  onClick={() =>
+                    navigate("/trip-planner", {
+                      state: { from, to },
+                    })
+                  }
+                  className="bg-primary text-white px-6 py-3 rounded-xl flex items-center gap-2 hover:scale-105 transition flex-1 sm:flex-none justify-center"
+                >
+                  <Search size={18} />
+                  Search
+                </button>
+              </div>
             </div>
 
             {/* QUICK ROUTES */}

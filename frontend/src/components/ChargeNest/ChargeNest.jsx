@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Zap, MapPin, IndianRupee, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const ChargeAnna = () => {
+const ChargeNest = () => {
   const navigate = useNavigate();
 
   return (
@@ -33,7 +33,7 @@ const ChargeAnna = () => {
             <div>
 
               <div className="inline-block px-4 py-2 bg-white/20 rounded-full text-sm mb-6">
-                ChargeAnna ⚡ Host Network
+                ChargeNest ⚡ Host Network
               </div>
 
               <h2 className="text-4xl md:text-6xl font-bold leading-tight text-white">
@@ -74,7 +74,7 @@ const ChargeAnna = () => {
                   onClick={() => navigate("/become-host")}
                   className="bg-white text-green-600 px-8 py-4 rounded-2xl font-semibold flex items-center gap-2 hover:scale-105 transition"
                 >
-                  Join ChargeAnna
+                  Join ChargeNest
                   <ArrowRight size={18} />
                 </button>
 
@@ -87,7 +87,7 @@ const ChargeAnna = () => {
               </div>
 
               {/* TRUST STATS */}
-              <div className="mt-10 flex gap-10 text-white">
+              <div className="mt-10 flex gap-6 md:gap-10 text-white flex-wrap">
 
                 <div>
                   <h3 className="text-2xl font-bold">24/7</h3>
@@ -148,4 +148,4 @@ const ChargeAnna = () => {
   );
 };
 
-export default ChargeAnna;
+export default ChargeNest;

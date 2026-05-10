@@ -4,7 +4,7 @@ const prisma = require('../lib/prisma');
 const { sendCommandToPlug } = require('../services/mqttService');
 const { createPaymentLink } = require('../services/paymentService');
 
-// POST /api/chargeanna/start-session
+// POST /api/chargenest/start-session
 router.post('/start-session', async (req, res) => {
     const { bookingId } = req.body;
     if (!bookingId) return res.status(400).json({ error: 'bookingId is required' });
@@ -37,7 +37,7 @@ router.post('/start-session', async (req, res) => {
     }
 });
 
-// POST /api/chargeanna/end-session
+// POST /api/chargenest/end-session
 router.post('/end-session', async (req, res) => {
     const { bookingId } = req.body;
     if (!bookingId) return res.status(400).json({ error: 'bookingId is required' });
@@ -77,7 +77,7 @@ router.post('/end-session', async (req, res) => {
                     bookingId, 
                     phone, 
                     email, 
-                    `ChargeAnna Session at ${booking.station.name}`
+                    `ChargeNest Session at ${booking.station.name}`
                 );
                 paymentLinkUrl = paymentLink.short_url;
                 paymentLinkId = paymentLink.id;

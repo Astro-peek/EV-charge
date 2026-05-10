@@ -60,7 +60,7 @@ const HostRegistration = () => {
           </div>
           <h2 className="text-3xl font-black text-gray-900 mb-4">Place Registered Successfully!</h2>
           <p className="text-gray-600 mb-8 leading-relaxed">
-            Thank you for joining the ChargeAnna network. Your charger application has been received and is under review. You'll be notified once it's live!
+            Thank you for joining the ChargeNest network. Your charger application has been received and is under review. You'll be notified once it's live!
           </p>
           <button
             onClick={() => navigate('/')}
@@ -95,7 +95,7 @@ const HostRegistration = () => {
 
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/30 border border-white/40 backdrop-blur-xl text-green-700 text-sm font-medium">
             <Zap size={16} />
-            Become a ChargeAnna Host
+            Become a ChargeNest Host
           </div>
 
           <h1 className="mt-6 text-5xl md:text-6xl font-black text-gray-900 leading-tight">

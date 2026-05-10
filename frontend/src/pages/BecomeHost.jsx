@@ -169,7 +169,7 @@ const BecomeHost = () => {
           </div>
           <h2 className="text-3xl font-black text-[#1e140f] mb-4">Place Registered Successfully!</h2>
           <p className="text-gray-600 mb-8 leading-relaxed">
-            Thank you for joining the ChargeAnna network. Your space application has been received and is under review. You'll be notified once it's live!
+            Thank you for joining the ChargeNest network. Your space application has been received and is under review. You'll be notified once it's live!
           </p>
           <button
             onClick={() => navigate('/')}
@@ -190,7 +190,7 @@ const BecomeHost = () => {
 
         <img
           src="images/ev.jpg"
-          alt="ChargeAnna"
+          alt="ChargeNest"
           className="absolute inset-0 w-full h-full object-cover"
         />
 
@@ -226,7 +226,7 @@ const BecomeHost = () => {
               </button>
               
               <button 
-                onClick={() => window.open('https://wa.me/919876543210?text=Hello%20ChargeAnna%2C%20I%20want%20to%20register%20my%20space%20(Dhaba%2FHome%2FShop)%20as%20a%20charging%20station.%20Please%20help%20me%20onboard!', '_blank')}
+                onClick={() => window.open('https://wa.me/919876543210?text=Hello%20ChargeNest%2C%20I%20want%20to%20register%20my%20space%20(Dhaba%2FHome%2FShop)%20as%20a%20charging%20station.%20Please%20help%20me%20onboard!', '_blank')}
                 className="bg-[#25D366] hover:bg-[#1ebd5a] text-white px-8 py-4 rounded-2xl text-lg font-semibold transition-all duration-300 shadow-xl flex items-center justify-center gap-2"
               >
                 <MessageCircle size={24} />

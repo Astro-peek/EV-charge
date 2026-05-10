@@ -25,7 +25,7 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const queueRoutes = require('./routes/queueRoutes');
 const invoiceRoutes = require('./routes/invoiceRoutes');
-const chargeAnnaRoutes = require('./routes/chargeAnnaRoutes');
+const chargeNestRoutes = require('./routes/chargeNestRoutes');
 const rechakraRoutes = require('./routes/rechakraRoutes');
 
 app.use('/api/stations', stationRoutes);
@@ -36,7 +36,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/queue', queueRoutes);
 app.use('/api/invoices', invoiceRoutes);
-app.use('/api/chargeanna', chargeAnnaRoutes);
+app.use('/api/chargenest', chargeNestRoutes);
 app.use('/api/rechakra', rechakraRoutes);
 
 // Basic Routes

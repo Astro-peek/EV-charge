@@ -45,7 +45,7 @@ const verifyPayment = (razorpay_order_id, razorpay_payment_id, razorpay_signatur
  * @param {string} userEmail
  * @param {string} description
  */
-const createPaymentLink = async (amountInRupees, bookingId, userPhone, userEmail, description = 'ChargeAnna P2P EV Charging Session') => {
+const createPaymentLink = async (amountInRupees, bookingId, userPhone, userEmail, description = 'ChargeNest P2P EV Charging Session') => {
     const options = {
         amount: Math.round(amountInRupees * 100),
         currency: 'INR',

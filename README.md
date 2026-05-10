@@ -8,7 +8,7 @@ EV Charge OS is an AI-powered orchestration layer designed to solve the critical
 
 ## 🚀 Key Features (1, 2, 3, 6)
 
-### 1. ChargeAnna (Peer-to-Peer Charging)
+### 1. ChargeNest (Peer-to-Peer Charging)
 *The "Airbnb" for EV Chargers.*
 - **Frontend**: Users can list their 15A/16A home/shop/dhaba sockets or find nearby peer-hosted chargers. Features a real-time slot booking interface and UPI-based instant payment.
 - **Backend**: Integrates with IoT Smart Plugs (ESP32) via MQTT to meter kWh consumption. Automated billing and settlement logic via Razorpay/UPI AutoPay.

@@ -14,7 +14,7 @@ const orchestrateQuery = async (query) => {
       Analyze the user query (which might be in English, Hindi, Bhojpuri, or other Indian languages).
       
       Route it to one of these 4 features:
-      1. ChargeAnna (P2P Charging/Listing)
+      1. ChargeNest (P2P Charging/Listing)
       2. VehicleID (Compatibility/Registration lookup)
       3. ChargeSaathi (Highway Trip Planning)
       4. ReChakra (E-Rickshaw/Regional/General help)
