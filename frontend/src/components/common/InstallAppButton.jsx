@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Download } from 'lucide-react';
+import { Download, Smartphone, LayoutGrid, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const InstallAppButton = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showOptions, setShowOptions] = useState(false);
 
   useEffect(() => {
-    // Listen for the event that indicates the PWA can be installed
     const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault(); // Prevent the default browser install prompt
-      setDeferredPrompt(e); // Save the event so we can trigger it later
+      e.preventDefault();
+      setDeferredPrompt(e);
       console.log("PWA install prompt is ready!");
     };
 
@@ -19,33 +20,79 @@ const InstallAppButton = () => {
     };
   }, []);
 
-  const handleInstallClick = async () => {
+  const handleInstallPWA = async () => {
     if (!deferredPrompt) {
-      alert("App can be installed from your browser menu! On Chrome, click the three dots in the top right and select 'Install App' or 'Add to Home screen'. On Safari, click 'Share' and 'Add to Home Screen'.");
+      alert("To install as an app: \n\nOn Chrome/Edge: Click the 'Install' icon in the address bar.\nOn Safari: Click 'Share' -> 'Add to Home Screen'.");
       return;
     }
-
-    // Show the native install prompt
     deferredPrompt.prompt();
-
-    // Wait for the user to respond to the prompt
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
-      console.log('User accepted the install prompt');
+      setDeferredPrompt(null);
     }
-    
-    // We can only use the prompt once, so clear it
-    setDeferredPrompt(null);
+  };
+
+  const handleDownloadAPK = () => {
+    const link = document.createElement('a');
+    link.href = '/chargenest.apk';
+    link.download = 'chargenest.apk';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
-    <button 
-      onClick={handleInstallClick}
-      className="fixed bottom-6 right-6 lg:top-24 lg:bottom-auto lg:right-10 z-50 bg-green-600 text-white px-5 py-3 rounded-full font-bold shadow-2xl border-2 border-white hover:bg-green-700 hover:scale-105 transition-all flex items-center gap-2 animate-bounce hover:animate-none"
-    >
-      <Download size={20} />
-      Download App
-    </button>
+    <div className="fixed bottom-20 right-4 z-[100] flex flex-col items-end gap-4">
+      <AnimatePresence>
+        {showOptions && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            className="flex flex-col gap-3 mb-2"
+          >
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleInstallPWA}
+              className="bg-white/90 backdrop-blur-md text-green-700 px-5 py-3 rounded-2xl font-bold shadow-2xl border border-green-100 flex items-center gap-3 whitespace-nowrap group transition-all"
+            >
+              <div className="bg-green-100 p-2 rounded-lg group-hover:bg-green-200 transition-colors">
+                <LayoutGrid size={20} />
+              </div>
+              <div className="flex flex-col items-start">
+                <span className="text-sm font-bold uppercase tracking-wider opacity-60">Web App</span>
+                <span>Add to Home Screen</span>
+              </div>
+            </motion.button>
+
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleDownloadAPK}
+              className="bg-green-600 text-white px-5 py-3 rounded-2xl font-bold shadow-2xl border border-green-500/50 flex items-center gap-3 whitespace-nowrap group transition-all"
+            >
+              <div className="bg-white/20 p-2 rounded-lg group-hover:bg-white/30 transition-colors">
+                <Smartphone size={20} />
+              </div>
+              <div className="flex flex-col items-start">
+                <span className="text-xs font-bold uppercase tracking-wider opacity-70">Android Only</span>
+                <span>Download APK File</span>
+              </div>
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      <motion.button 
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => setShowOptions(!showOptions)}
+        className={`bg-green-600 text-white p-5 rounded-full font-bold shadow-2xl border-4 border-white ring-4 ring-green-600/20 backdrop-blur-sm flex items-center justify-center transition-all ${!showOptions ? 'animate-bounce shadow-green-500/50' : ''}`}
+      >
+        {showOptions ? <X size={28} /> : <Download size={28} />}
+      </motion.button>
+    </div>
   );
 };
 

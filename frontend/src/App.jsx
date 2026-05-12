@@ -19,6 +19,8 @@ import ChargeSaathiPage from "./pages/ChargeSaathiPage";
 import VehicleProtocolPage from "./pages/VehicleProtocolPage";
 
 import FindAndBook from "./pages/FindAndBook";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentCancel from "./pages/PaymentCancel";
 
 function App() {
   return (
@@ -58,6 +60,8 @@ function App() {
 
       {/* WITHOUT NAVBAR */}
       <Route path="/login" element={<Login />} />
+      <Route path="/payment/success" element={<PaymentSuccess />} />
+      <Route path="/payment/cancel" element={<PaymentCancel />} />
 
       {/* 404 */}
       <Route path="*" element={<h1 className="text-center mt-20 text-3xl font-bold">404 - Page Not Found</h1>} />
