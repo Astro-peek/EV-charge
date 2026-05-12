@@ -37,58 +37,62 @@ const InstallAppButton = () => {
   };
 
   return (
-    <div className="fixed top-24 left-4 z-[100] flex flex-col items-start gap-4">
+    <div className="fixed bottom-6 left-6 z-[100] flex flex-col items-start gap-4">
       <AnimatePresence>
         {showOptions && (
           <motion.div 
-            initial={{ opacity: 0, x: -20, scale: 0.9 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: -20, scale: 0.9 }}
+            initial={{ opacity: 0, x: -20, y: 20, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -20, y: 20, scale: 0.9 }}
             className="flex flex-col gap-3 mb-2"
           >
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleInstallPWA}
-              className="bg-white/90 backdrop-blur-md text-green-700 px-5 py-3 rounded-2xl font-bold shadow-2xl border border-green-100 flex items-center gap-3 whitespace-nowrap group transition-all"
+              className="bg-white/95 backdrop-blur-lg text-green-700 px-5 py-3 rounded-2xl font-bold shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-green-100 flex items-center gap-3 whitespace-nowrap group transition-all"
             >
               <div className="bg-green-100 p-2 rounded-lg group-hover:bg-green-200 transition-colors">
                 <LayoutGrid size={20} />
               </div>
               <div className="flex flex-col items-start text-left">
-                <span className="text-sm font-bold uppercase tracking-wider opacity-60">Web App</span>
-                <span>Add to Home Screen</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">Browser App</span>
+                <span className="text-sm">Add to Home Screen</span>
               </div>
             </motion.button>
 
-            <motion.div className="flex flex-col gap-1">
+            <div className="relative group/apk">
               <motion.button 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleDownloadAPK}
-                className="bg-green-600 text-white px-5 py-3 rounded-2xl font-bold shadow-2xl border border-green-500/50 flex items-center gap-3 whitespace-nowrap group transition-all"
+                className="bg-green-600 text-white px-5 py-3 rounded-2xl font-bold shadow-[0_20px_40px_rgba(22,163,74,0.3)] border border-green-500/50 flex items-center gap-3 whitespace-nowrap group transition-all"
               >
                 <div className="bg-white/20 p-2 rounded-lg group-hover:bg-white/30 transition-colors">
                   <Smartphone size={20} />
                 </div>
                 <div className="flex flex-col items-start text-left">
-                  <span className="text-xs font-bold uppercase tracking-wider opacity-70">Android Only</span>
-                  <span>Download APK File</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest opacity-70">Android Native</span>
+                  <span className="text-sm">Download APK File</span>
                 </div>
               </motion.button>
-              <p className="text-[10px] text-green-700 font-bold bg-white/80 backdrop-blur-sm px-2 py-1 rounded-lg border border-green-100 shadow-sm animate-pulse">
-                To use full feature download mobile app ⚡
-              </p>
-            </motion.div>
+              
+              <div className="absolute -top-10 left-0 w-full flex justify-center">
+                <span className="bg-green-800/90 backdrop-blur-sm text-white text-[9px] px-3 py-1.5 rounded-full font-bold shadow-xl border border-white/20 whitespace-nowrap animate-bounce">
+                  ⚡ Get full features on mobile app
+                </span>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
       
       <motion.button 
-        whileHover={{ scale: 1.1 }}
+        whileHover={{ scale: 1.1, rotate: 5 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setShowOptions(!showOptions)}
-        className={`bg-green-600 text-white p-5 rounded-full font-bold shadow-2xl border-4 border-white ring-4 ring-green-600/20 backdrop-blur-sm flex items-center justify-center transition-all ${!showOptions ? 'animate-bounce shadow-green-500/50' : ''}`}
+        className={`bg-green-600 text-white p-5 rounded-3xl font-bold shadow-[0_20px_50px_rgba(22,163,74,0.4)] border-4 border-white backdrop-blur-sm flex items-center justify-center transition-all ${!showOptions ? 'animate-pulse' : ''}`}
+        title="App Options"
       >
         {showOptions ? <X size={28} /> : <Download size={28} />}
       </motion.button>
