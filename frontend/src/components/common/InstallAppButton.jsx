@@ -37,13 +37,13 @@ const InstallAppButton = () => {
   };
 
   return (
-    <div className="fixed bottom-20 right-4 z-[100] flex flex-col items-end gap-4">
+    <div className="fixed top-24 left-4 z-[100] flex flex-col items-start gap-4">
       <AnimatePresence>
         {showOptions && (
           <motion.div 
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            initial={{ opacity: 0, x: -20, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -20, scale: 0.9 }}
             className="flex flex-col gap-3 mb-2"
           >
             <motion.button 
@@ -55,26 +55,31 @@ const InstallAppButton = () => {
               <div className="bg-green-100 p-2 rounded-lg group-hover:bg-green-200 transition-colors">
                 <LayoutGrid size={20} />
               </div>
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-start text-left">
                 <span className="text-sm font-bold uppercase tracking-wider opacity-60">Web App</span>
                 <span>Add to Home Screen</span>
               </div>
             </motion.button>
 
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleDownloadAPK}
-              className="bg-green-600 text-white px-5 py-3 rounded-2xl font-bold shadow-2xl border border-green-500/50 flex items-center gap-3 whitespace-nowrap group transition-all"
-            >
-              <div className="bg-white/20 p-2 rounded-lg group-hover:bg-white/30 transition-colors">
-                <Smartphone size={20} />
-              </div>
-              <div className="flex flex-col items-start">
-                <span className="text-xs font-bold uppercase tracking-wider opacity-70">Android Only</span>
-                <span>Download APK File</span>
-              </div>
-            </motion.button>
+            <motion.div className="flex flex-col gap-1">
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleDownloadAPK}
+                className="bg-green-600 text-white px-5 py-3 rounded-2xl font-bold shadow-2xl border border-green-500/50 flex items-center gap-3 whitespace-nowrap group transition-all"
+              >
+                <div className="bg-white/20 p-2 rounded-lg group-hover:bg-white/30 transition-colors">
+                  <Smartphone size={20} />
+                </div>
+                <div className="flex flex-col items-start text-left">
+                  <span className="text-xs font-bold uppercase tracking-wider opacity-70">Android Only</span>
+                  <span>Download APK File</span>
+                </div>
+              </motion.button>
+              <p className="text-[10px] text-green-700 font-bold bg-white/80 backdrop-blur-sm px-2 py-1 rounded-lg border border-green-100 shadow-sm animate-pulse">
+                To use full feature download mobile app ⚡
+              </p>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
