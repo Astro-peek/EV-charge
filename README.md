@@ -1,81 +1,169 @@
-# EV Charge OS — BGI Hackathon
-**Revolutionizing EV Charging for Bharat**
+# IntelliRide ⚡ – Smart EV Ecosystem
 
-## 📖 Overview
-EV Charge OS is an AI-powered orchestration layer designed to solve the critical infrastructure gaps in India's EV ecosystem. By leveraging existing infrastructure (peer-to-peer charging), universal compatibility (VehicleID), and smart automation (GridSense), we ensure a seamless charging experience for everyone—from premium EV car owners to Bharat's e-rickshaw drivers.
+[![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg)](https://github.com/Astro-peek/EV-charge)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![React](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-blue.svg)](https://react.dev/)
+[![Gemini](https://img.shields.io/badge/AI-Google%20Gemini-orange.svg)](https://deepmind.google/technologies/gemini/)
 
----
-
-## 🚀 Key Features (1, 2, 3, 6)
-
-### 1. ChargeNest (Peer-to-Peer Charging)
-*The "Airbnb" for EV Chargers.*
-- **Frontend**: Users can list their 15A/16A home/shop/dhaba sockets or find nearby peer-hosted chargers. Features a real-time slot booking interface and UPI-based instant payment.
-- **Backend**: Integrates with IoT Smart Plugs (ESP32) via MQTT to meter kWh consumption. Automated billing and settlement logic via Razorpay/UPI AutoPay.
-- **Working**: When a user books a slot, the Master Orchestrator checks the smart plug status. Once the session ends, the backend calculates the bill based on actual units consumed and triggers a UPI payment link.
-
-### 2. VehicleID Protocol
-*One QR, Zero Confusion.*
-- **Frontend**: A universal QR code (scanned from the vehicle's registration or dashboard). The app automatically filters and displays only compatible chargers.
-- **Backend**: A central database (linked to VAHAN 4.0 API) that maps vehicle registration numbers to their specific charging profile (connector type, battery capacity, max voltage).
-- **Working**: Scanning the QR sends the vehicle ID to the backend, which fetches the VCP (Vehicle Charging Profile). The search API then uses this profile to filter Map results in real-time.
-
-### 3. ChargeSaathi (Smart Highway Trip Planner)
-*The IRCTC of EV Travel.*
-- **Frontend**: A multi-stop route planning interface. Users enter their destination, and the app plots the most efficient path with guaranteed charging slots.
-- **Backend**: Uses a **TripPlanner Agent** to calculate range based on vehicle battery, terrain, and Indian weather conditions (adjusting for heat-induced range loss).
-- **Working**: The system auto-books slots at each stop along the route using the OCPP protocol. If a booked charger goes offline, the agent proactively re-routes the user to the next best available slot.
-
-### 6. ReChakra (Voice-First E-Rickshaw App)
-*Empowering Bharat's 3W Revolution.*
-- **Frontend**: A simplified, voice-first interface supporting regional languages (Bhojpuri, Hindi, etc.) powered by **Bhashini API**.
-- **Backend**: Voice intent classification (ASR/TTS) routed to the locator service. Includes a lightweight battery health monitoring model.
-- **Working**: An e-rickshaw driver asks for a charger in their native dialect. The backend translates the speech, finds the cheapest 5A/15A socket nearby, and responds via voice with directions and pricing.
+IntelliRide is a cutting-edge web application designed to simplify the EV charging experience. It features an intelligent, floating AI assistant that helps users plan trips, find nearby charging stations, and book urgent slots instantly through natural language interaction.
 
 ---
+
+## 🚀 Overview
+
+IntelliRide is built for the modern EV owner. Navigating the world of electric vehicles can be complex—finding a working station, checking availability, and managing payments shouldn't be. IntelliRide integrates these workflows into a single, AI-powered interface that follows you across the site.
+
+## ✨ Features
+
+- **🤖 Floating AI Assistant**: Powered by Google Gemini, providing 24/7 support for site navigation and EV queries.
+- **⚡ Urgent Slot Booking**: The AI can detect your location, find the nearest available charging slot, and book it for you instantly.
+- **💳 Integrated Payments**: Seamless redirection to Razorpay for secure booking confirmations.
+- **🗺️ Interactive Map View**: Real-time visualization of charging stations using Google Maps/Mapbox.
+- **📱 PWA & APK Support**: Install as a Progressive Web App or download the dedicated Android APK for a native experience.
+- **🌍 Multi-language & Voice Support**: Talk to the assistant in multiple Indian languages with integrated voice recognition and synthesis.
 
 ## 🛠️ Tech Stack
 
-### Frontend (User & Operator Layer)
-- **Framework**: React Native (Expo) for iOS/Android apps.
-- **Web Dashboard**: React.js with TailwindCSS for CPO management.
-- **Voice Integration**: Bhashini NLP MCP (Government of India API).
-- **Messaging**: WhatsApp/SMS fallback via Twilio MCP.
-
-### Backend (MERN Logic & AI Layer)
-- **Core API**: Node.js + Express.js — The central Agent Gateway.
-- **Database**: MongoDB (with GeoJSON) — For station locations, user profiles, and session data.
-- **Charger Comms**: Node.js — Handling OCPP 2.0.1 WebSocket sessions.
-- **Task Queue**: BullMQ + Redis — For async background jobs (slot monitoring, notifications).
-- **AI Orchestration**: Claude 3.5 Sonnet (via Anthropic Node.js SDK).
+- **Frontend**: React.js (Vite), Tailwind CSS, Framer Motion (Animations), Lucide React (Icons).
+- **Backend**: Node.js, Express.js.
+- **Database & Auth**: Supabase (PostgreSQL).
+- **AI Engine**: Google Gemini Pro API.
+- **Payments**: Razorpay API.
+- **Maps/Location**: Google Maps API / Leaflet.
+- **State Management**: React Context API.
 
 ---
 
-## 🏗️ Getting Started
+## 📂 Project Structure
+
+```text
+├── backend/
+│   ├── routes/             # API Endpoints (Chatbot, Booking, etc.)
+│   ├── services/           # AI Logic & Pricing Services
+│   ├── index.js            # Server Entry Point
+│   └── .env                # Backend Secrets
+├── frontend/
+│   ├── public/             # Static Assets (Favicons, Icons)
+│   ├── src/
+│   │   ├── components/     # Reusable UI (Hero, AIChatbot, etc.)
+│   │   ├── context/        # Auth & App State
+│   │   ├── pages/          # Home, Login, TripPlanner, etc.
+│   │   ├── App.jsx         # Routing & Main Entry
+│   │   └── index.css       # Global Styles
+│   └── .env                # Frontend Env Vars
+└── README.md
+```
+
+---
+
+## 🚦 Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- MongoDB (Atlas or Local)
-- Redis Server (for BullMQ)
 
-### Quick Setup
-1. **Clone and Install Backend**:
+- Node.js (v18 or higher)
+- npm or yarn
+- Supabase Project
+- Google Gemini API Key
+- Razorpay Account (Test mode)
+
+### Installation Steps
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Astro-peek/EV-charge.git
+   cd bgi
+   ```
+
+2. **Setup Backend**:
    ```bash
    cd backend
    npm install
+   # Create a .env file based on the environment variables section below
    npm run dev
    ```
-2. **Environment Configuration**:
-   Create a `.env` file in the `backend` root:
-   ```env
-   ANTHROPIC_API_KEY=your_key
-   MONGODB_URI=mongodb://localhost:27017/evcharge
-   REDIS_URL=redis://localhost:6379
+
+3. **Setup Frontend**:
+   ```bash
+   cd ../frontend
+   npm install
+   # Create a .env file based on the environment variables section below
+   npm run dev
    ```
 
 ---
 
-## 🏆 Hackathon Goals
-- **Zero Human Touch**: Automated failure recovery and routing.
-- **Inclusive Tech**: Making EV charging accessible to Bharat's non-English speaking population.
-- **Asset Monetization**: Converting existing electricity points into a national charging grid.
+## ⚙️ Environment Variables
+
+### Frontend (`frontend/.env`)
+| Variable | Description | Example |
+| :--- | :--- | :--- |
+| `VITE_SUPABASE_URL` | Your Supabase Project URL | `https://xyz.supabase.co` |
+| `VITE_SUPABASE_ANON_KEY` | Public Anon Key | `eyJhbGci...` |
+| `VITE_API_URL` | Production Backend URL | `https://api.yoursite.com` |
+| `VITE_RAZORPAY_KEY_ID` | Razorpay Public Key | `rzp_test_...` |
+
+### Backend (`backend/.env`)
+| Variable | Description | Example |
+| :--- | :--- | :--- |
+| `GEMINI_API_KEY` | Google AI API Key | `AIzaSy...` |
+| `DATABASE_URL` | Supabase Postgres Connection | `postgresql://...` |
+| `RAZORPAY_KEY_ID` | Razorpay Key | `rzp_test_...` |
+| `RAZORPAY_KEY_SECRET` | Razorpay Secret | `vj2UQ...` |
+| `FRONTEND_URL` | Allowed CORS Origin | `https://yoursite.com` |
+
+---
+
+## 🔄 How It Works
+
+1. **User Request**: User asks the AI, *"I need an urgent charging slot near me."*
+2. **Intent Detection**: Gemini API parses the request and identifies the "Urgent Booking" intent.
+3. **Location Retrieval**: The app fetches the user's current GPS coordinates.
+4. **Slot Search**: The backend queries the database for the nearest available station within a 5km radius.
+5. **Confirmation**: The AI responds: *"I found a slot at ChargeNest Station (2km away). Would you like to book it for ₹250?"*
+6. **Payment**: Upon user confirmation, the AI generates a payment link and redirects the user to the Razorpay gateway.
+
+---
+
+## 🧠 Gemini API Integration
+
+The chatbot uses the `gemini-pro` model to provide context-aware responses. It is configured with a system instruction that defines its persona as an "EV Charging Expert." The integration includes:
+- **Intent Mapping**: Custom logic to trigger bookings vs. general Q&A.
+- **Multilingual Support**: Real-time translation for diverse user bases.
+- **Streaming Responses**: (Optional) For a more natural conversation feel.
+
+---
+
+## 📸 Screenshots
+
+![Home Page](https://via.placeholder.com/800x400?text=IntelliRide+Home+Page)
+*Placeholder for Home Page UI*
+
+![AI Chatbot](https://via.placeholder.com/400x600?text=AI+Chatbot+Interface)
+*Placeholder for AI Assistant in Action*
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+1. Fork the Project.
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the Branch (`git push origin feature/AmazingFeature`).
+5. Open a Pull Request.
+
+---
+
+## 📜 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+## ✉️ Contact
+
+**Paras Gupta**  
+GitHub: [@Astro-peek](https://github.com/Astro-peek)  
+Project Link: [https://github.com/Astro-peek/EV-charge](https://github.com/Astro-peek/EV-charge)
+
+⚡ *Powering your journey with intelligence.*
