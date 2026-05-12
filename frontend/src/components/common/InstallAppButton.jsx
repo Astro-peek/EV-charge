@@ -77,9 +77,9 @@ const InstallAppButton = () => {
                 </div>
               </motion.button>
               
-              <div className="absolute -top-10 left-0 w-full flex justify-center">
-                <span className="bg-green-800/90 backdrop-blur-sm text-white text-[9px] px-3 py-1.5 rounded-full font-bold shadow-xl border border-white/20 whitespace-nowrap animate-bounce">
-                  ⚡ Get full features on mobile app
+              <div className="mt-2 flex justify-start">
+                <span className="bg-green-800/90 backdrop-blur-sm text-white text-[9px] px-3 py-1.5 rounded-full font-bold shadow-xl border border-white/20 whitespace-nowrap">
+                  ⚡ To use full feature download mobile app
                 </span>
               </div>
             </div>
