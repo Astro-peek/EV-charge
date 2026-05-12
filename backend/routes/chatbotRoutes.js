@@ -36,7 +36,7 @@ router.post('/chat', async (req, res) => {
     // Try different model names for free tier
     let response;
     try {
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
       
       const languageInstructions = {
         en: "Respond in English. Be friendly and helpful.",
@@ -136,6 +136,12 @@ User message: ${message}`;
         }
       }
     } catch (geminiError) {
+      console.error('Gemini API Error Detail:', {
+        message: geminiError.message,
+        status: geminiError.status,
+        statusText: geminiError.statusText,
+        stack: geminiError.stack
+      });
       console.log('Gemini API failed, using fallback response');
       
       // Dynamic fallback responses based on user input

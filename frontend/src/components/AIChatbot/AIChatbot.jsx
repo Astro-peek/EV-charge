@@ -101,7 +101,20 @@ const AIChatbot = () => {
 
   const handleGeminiChat = async (userInput) => {
     try {
-      const userLocation = { lat: 28.6139, lng: 77.2090 }; // Use mock or actual user location
+      let userLocation = { lat: 28.6139, lng: 77.2090 }; // Fallback to New Delhi
+      
+      try {
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+        });
+        userLocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        console.log('Using real user location:', userLocation);
+      } catch (geoError) {
+        console.warn('Geolocation failed or denied, using fallback:', geoError.message);
+      }
       
       const response = await api.post('/chatbot/chat', {
         message: userInput,
