@@ -33,12 +33,7 @@ const InstallAppButton = () => {
   };
 
   const handleDownloadAPK = () => {
-    const link = document.createElement('a');
-    link.href = '/chargenest.apk';
-    link.download = 'chargenest.apk';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    window.open('https://drive.google.com/uc?export=download&id=1-b5Gd7UcvRWOK62Gh7Z8bVhknyvpr5_h', '_blank');
   };
 
   return (
