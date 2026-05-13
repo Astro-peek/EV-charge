@@ -26,13 +26,25 @@ const RatingModal = ({ booking, userId, onClose, onSubmitted }) => {
 
   const handleSubmit = async () => {
     if (rating === 0) { setError("Please select a star rating."); return; }
+
+    // Resolve IDs — prefer prop, fall back to booking fields
+    const resolvedUserId = userId || booking.user_id;
+    const resolvedStationId = booking.station_id;
+    const resolvedBookingId = booking.id;
+
+    if (!resolvedBookingId || !resolvedStationId || !resolvedUserId) {
+      console.error("Missing fields:", { resolvedBookingId, resolvedStationId, resolvedUserId });
+      setError("Missing booking info. Please refresh and try again.");
+      return;
+    }
+
     setError("");
     setSubmitting(true);
     try {
       await reviewService.submit({
-        booking_id: booking.id,
-        station_id: booking.station_id,
-        user_id: userId,
+        booking_id: resolvedBookingId,
+        station_id: resolvedStationId,
+        user_id: resolvedUserId,
         rating,
         feedback: feedback.trim() || null,
       });

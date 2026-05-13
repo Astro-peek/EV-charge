@@ -20,7 +20,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await bookingService.getBookings(user?.id);
+        const response = await bookingService.getBookings(user?.uid);
         setBookings(response.data);
       } catch (error) {
         console.error("Error fetching bookings:", error);
@@ -62,7 +62,7 @@ const Dashboard = () => {
       {ratingBooking && (
         <RatingModal
           booking={ratingBooking}
-          userId={user?.id}
+          userId={user?.uid}
           onClose={() => setRatingBooking(null)}
           onSubmitted={handleReviewSubmitted}
         />
