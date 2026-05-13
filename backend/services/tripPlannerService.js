@@ -149,11 +149,16 @@ const planTrip = async (startLat, startLng, endLat, endLng, vehicleRangeKm = 350
         currentRange = fullChargeRange;
     }
 
+    const finalLegDist = haversine(currentLat, currentLng, endLat, endLng);
+    const finalRangeRemaining = Math.max(0, currentRange - finalLegDist);
+    const expectedArrivalChargePct = Math.round((finalRangeRemaining / vehicleRangeKm) * 100);
+
     return {
         totalDistance: totalDistance.toFixed(1),
         stopsNeeded: stops.filter(s => !s.warning).length,
         chargingStops: stops,
         allStations: validStations,
+        expectedArrivalChargePct: expectedArrivalChargePct,
         message: `🗺️ Trip planned with ${stops.filter(s => !s.warning).length} charging stop(s).`
     };
 };

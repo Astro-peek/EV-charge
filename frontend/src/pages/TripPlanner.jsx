@@ -723,7 +723,7 @@ const TripPlanner = () => {
                       { icon: RouteIcon, label: "Total Distance", value: `${result.totalDistance} km` },
                       { icon: BatteryCharging, label: "Charge Needed", value: `${result.stopsNeeded} Stops` },
                       { icon: Clock3, label: "Est. Duration", value: `${(result.totalDistance / 60).toFixed(1)} hrs` },
-                      { icon: Zap, label: "Battery Buffer", value: "20%" },
+                      { icon: Zap, label: "Arrival Charge", value: `${result.expectedArrivalChargePct || 0}%` },
                     ].map((stat, i) => (
                       <div key={i} className="bg-white/5 rounded-2xl p-5 border border-white/10">
                         <stat.icon className="text-green-500 mb-3" size={24} />
