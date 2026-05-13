@@ -365,11 +365,83 @@ const TripPlanner = () => {
   };
 
   const vehicles = [
-    { name: "Nexon EV", range: "312km", rangeKm: 312 },
-    { name: "MG ZS EV", range: "461km", rangeKm: 461 },
-    { name: "BYD Atto 3", range: "521km", rangeKm: 521 },
-    { name: "Tiago EV", range: "250km", rangeKm: 250 },
+    // Tata Motors
+    { brand: "Tata", name: "Nexon EV", range: "453km", rangeKm: 453 },
+    { brand: "Tata", name: "Punch EV", range: "315km", rangeKm: 315 },
+    { brand: "Tata", name: "Tiago EV", range: "250km", rangeKm: 250 },
+    { brand: "Tata", name: "Tigor EV", range: "315km", rangeKm: 315 },
+    { brand: "Tata", name: "Curvv EV", range: "502km", rangeKm: 502 },
+    { brand: "Tata", name: "Harrier EV", range: "500km", rangeKm: 500 },
+    
+    // Mahindra
+    { brand: "Mahindra", name: "XUV400", range: "456km", rangeKm: 456 },
+    { brand: "Mahindra", name: "BE 6", range: "450km", rangeKm: 450 },
+    { brand: "Mahindra", name: "XEV 9e", range: "500km", rangeKm: 500 },
+    { brand: "Mahindra", name: "XEV 9S", range: "500km", rangeKm: 500 },
+    
+    // MG Motor
+    { brand: "MG", name: "Comet EV", range: "230km", rangeKm: 230 },
+    { brand: "MG", name: "Windsor EV", range: "331km", rangeKm: 331 },
+    { brand: "MG", name: "ZS EV", range: "461km", rangeKm: 461 },
+    { brand: "MG", name: "Cyberster", range: "500km", rangeKm: 500 },
+    { brand: "MG", name: "M9", range: "540km", rangeKm: 540 },
+    
+    // Hyundai
+    { brand: "Hyundai", name: "Creta EV", range: "450km", rangeKm: 450 },
+    { brand: "Hyundai", name: "Ioniq 5", range: "631km", rangeKm: 631 },
+    
+    // Kia
+    { brand: "Kia", name: "EV6", range: "708km", rangeKm: 708 },
+    { brand: "Kia", name: "EV9", range: "541km", rangeKm: 541 },
+    { brand: "Kia", name: "Carens EV", range: "450km", rangeKm: 450 },
+    
+    // Maruti Suzuki
+    { brand: "Maruti", name: "e Vitara", range: "500km", rangeKm: 500 },
+    
+    // BYD
+    { brand: "BYD", name: "Atto 3", range: "521km", rangeKm: 521 },
+    { brand: "BYD", name: "e6", range: "520km", rangeKm: 520 },
+    { brand: "BYD", name: "Seal", range: "650km", rangeKm: 650 },
+    { brand: "BYD", name: "eMAX 7", range: "530km", rangeKm: 530 },
+    
+    // Mercedes-Benz
+    { brand: "Mercedes", name: "EQB", range: "423km", rangeKm: 423 },
+    { brand: "Mercedes", name: "EQE SUV", range: "550km", rangeKm: 550 },
+    { brand: "Mercedes", name: "EQS", range: "857km", rangeKm: 857 },
+    { brand: "Mercedes", name: "G580 EQ", range: "450km", rangeKm: 450 },
+    
+    // BMW
+    { brand: "BMW", name: "i4", range: "590km", rangeKm: 590 },
+    { brand: "BMW", name: "i5", range: "516km", rangeKm: 516 },
+    { brand: "BMW", name: "i7", range: "625km", rangeKm: 625 },
+    { brand: "BMW", name: "iX", range: "425km", rangeKm: 425 },
+    
+    // Audi
+    { brand: "Audi", name: "Q8 e-tron", range: "582km", rangeKm: 582 },
+    { brand: "Audi", name: "e-tron GT", range: "500km", rangeKm: 500 },
+    
+    // Volvo
+    { brand: "Volvo", name: "XC40 Recharge", range: "418km", rangeKm: 418 },
+    { brand: "Volvo", name: "C40 Recharge", range: "530km", rangeKm: 530 },
+    
+    // Porsche
+    { brand: "Porsche", name: "Taycan", range: "484km", rangeKm: 484 },
+    
+    // Tesla
+    { brand: "Tesla", name: "Model Y", range: "533km", rangeKm: 533 },
+    
+    // VinFast
+    { brand: "VinFast", name: "VF 6", range: "400km", rangeKm: 400 },
+    { brand: "VinFast", name: "VF 7", range: "450km", rangeKm: 450 },
+    
+    // Citroen
+    { brand: "Citroen", name: "eC3", range: "320km", rangeKm: 320 },
+    
+    // Rolls-Royce
+    { brand: "Rolls-Royce", name: "Spectre", range: "530km", rangeKm: 530 },
   ];
+
+  const brands = [...new Set(vehicles.map(v => v.brand))];
   const selectedVehicle = vehicles.find(v => v.name === vehicle) || vehicles[0];
 
   return (
@@ -460,21 +532,32 @@ const TripPlanner = () => {
               {/* VEHICLE SELECTOR */}
               <div className="mt-8">
                 <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Select Vehicle</p>
-                <div className="grid grid-cols-2 gap-3">
-                  {vehicles.map((v) => (
-                    <button
-                      key={v.name}
-                      onClick={() => setVehicle(v.name)}
-                      className={`p-4 rounded-2xl border-2 text-left transition-all ${
-                        vehicle === v.name 
-                          ? "border-green-500 bg-green-50" 
-                          : "border-slate-50 bg-slate-50 hover:border-slate-200"
-                      }`}
-                    >
-                      <Car size={20} className={vehicle === v.name ? "text-green-600" : "text-slate-400"} />
-                      <p className={`mt-2 font-black ${vehicle === v.name ? "text-slate-900" : "text-slate-600"}`}>{v.name}</p>
-                      <p className="text-[10px] text-slate-400 font-bold">{v.range}</p>
-                    </button>
+                <div className="max-h-[300px] overflow-y-auto pr-2 space-y-6 custom-scrollbar">
+                  {brands.map(brand => (
+                    <div key={brand}>
+                      <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-1">{brand}</h3>
+                      <div className="grid grid-cols-1 gap-2">
+                        {vehicles.filter(v => v.brand === brand).map((v) => (
+                          <button
+                            key={v.name}
+                            onClick={() => setVehicle(v.name)}
+                            className={`p-4 rounded-2xl border-2 text-left transition-all flex items-center gap-4 ${
+                              vehicle === v.name 
+                                ? "border-green-500 bg-green-50" 
+                                : "border-slate-50 bg-slate-50 hover:border-slate-200"
+                            }`}
+                          >
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${vehicle === v.name ? "bg-green-500 text-white" : "bg-white text-slate-400 shadow-sm"}`}>
+                              <Car size={20} />
+                            </div>
+                            <div className="flex-1">
+                              <p className={`font-black text-sm ${vehicle === v.name ? "text-slate-900" : "text-slate-600"}`}>{v.name}</p>
+                              <p className="text-[10px] text-slate-400 font-bold">Range: {v.range}</p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
