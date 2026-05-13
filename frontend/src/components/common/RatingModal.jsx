@@ -38,19 +38,24 @@ const RatingModal = ({ booking, userId, onClose, onSubmitted }) => {
       return;
     }
 
+    const payload = {
+      booking_id: resolvedBookingId,
+      station_id: resolvedStationId,
+      user_id: resolvedUserId,
+      rating,
+      feedback: feedback.trim() || null,
+    };
+
+    console.log("Submitting review with payload:", payload);
+
     setError("");
     setSubmitting(true);
     try {
-      await reviewService.submit({
-        booking_id: resolvedBookingId,
-        station_id: resolvedStationId,
-        user_id: resolvedUserId,
-        rating,
-        feedback: feedback.trim() || null,
-      });
+      await reviewService.submit(payload);
       setDone(true);
       if (onSubmitted) onSubmitted(booking.id);
     } catch (e) {
+      console.error("Submission error:", e.response?.data);
       setError(e?.response?.data?.message || "Failed to submit. Try again.");
     } finally {
       setSubmitting(false);
