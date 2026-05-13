@@ -147,7 +147,7 @@ const Dashboard = () => {
           ) : bookings.length > 0 ? (
             <div className="space-y-4">
               {bookings.map((booking) => {
-                const isCompleted = booking.status === "completed";
+                const isReviewable = booking.status === "completed" || booking.status === "active";
                 const alreadyReviewed = reviewedIds.has(booking.id);
                 return (
                   <motion.div
@@ -172,8 +172,8 @@ const Dashboard = () => {
                         {booking.status}
                       </span>
 
-                      {/* ⭐ Rate Ride button — only for completed bookings */}
-                      {isCompleted && (
+                      {/* ⭐ Rate Ride button — for active or completed bookings */}
+                      {isReviewable && (
                         <button
                           onClick={() => setRatingBooking(booking)}
                           className={`text-xs flex items-center gap-1 font-bold px-2.5 py-1.5 rounded-lg transition-all ${
