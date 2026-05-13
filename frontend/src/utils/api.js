@@ -88,4 +88,10 @@ export const hostService = {
   deleteStation: (stationId) => api.delete(`/stations/${stationId}`),
 };
 
+export const reviewService = {
+  submit: (data) => api.post('/reviews', data),
+  getForStation: (stationId) => api.get(`/reviews/station/${stationId}`),
+  getForBooking: (bookingId) => api.get(`/reviews/booking/${bookingId}`),
+};
+
 export default api;

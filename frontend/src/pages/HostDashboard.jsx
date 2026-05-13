@@ -5,9 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Zap, MapPin, Clock, TrendingUp, Users, ToggleLeft, ToggleRight,
   CheckCircle, AlertCircle, RefreshCw, Download, BarChart3,
-  Wifi, WifiOff, Star, IndianRupee, Trash2
+  Wifi, WifiOff, Star, IndianRupee, Trash2, MessageSquare
 } from "lucide-react";
-import { hostService, queueService, analyticsService, invoiceService, bookingService } from "../utils/api";
+import { hostService, queueService, analyticsService, invoiceService, bookingService, reviewService } from "../utils/api";
 
 const StatusBadge = ({ status }) => {
   const map = {
@@ -32,6 +32,7 @@ const HostDashboard = () => {
   const [bookings, setBookings] = useState([]);
   const [queue, setQueue] = useState({});
   const [stats, setStats] = useState({});
+  const [reviews, setReviews] = useState({}); // { stationId: { reviews:[], avgRating, total } }
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
   const [togglingStation, setTogglingStation] = useState(null);
@@ -47,21 +48,25 @@ const HostDashboard = () => {
       setStations(stationsRes.data || []);
       setBookings(bookingsRes.data || []);
 
-      // Fetch queue + stats for each station
+      // Fetch queue + stats + reviews for each station
       const queueData = {};
       const statsData = {};
+      const reviewsData = {};
       await Promise.all(
         (stationsRes.data || []).map(async (s) => {
-          const [qRes, statsRes] = await Promise.all([
+          const [qRes, statsRes, reviewRes] = await Promise.all([
             queueService.getQueue(s.id).catch(() => ({ data: { queue: [], queueLength: 0 } })),
             analyticsService.getStationStats(s.id).catch(() => ({ data: {} })),
+            reviewService.getForStation(s.id).catch(() => ({ data: { reviews: [], avgRating: null, total: 0 } })),
           ]);
           queueData[s.id] = qRes.data;
           statsData[s.id] = statsRes.data;
+          reviewsData[s.id] = reviewRes.data;
         })
       );
       setQueue(queueData);
       setStats(statsData);
+      setReviews(reviewsData);
     } catch (err) {
       console.error("Host dashboard error:", err);
     } finally {
@@ -194,8 +199,8 @@ const HostDashboard = () => {
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 mt-8">
         {/* TABS */}
-        <div className="flex gap-2 mb-8 bg-white rounded-2xl p-1.5 shadow-sm border border-slate-100 inline-flex">
-          {["overview", "queue", "bookings"].map(tab => (
+        <div className="flex gap-2 mb-8 bg-white rounded-2xl p-1.5 shadow-sm border border-slate-100 inline-flex flex-wrap">
+          {["overview", "queue", "bookings", "reviews"].map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -203,7 +208,7 @@ const HostDashboard = () => {
                 activeTab === tab ? "bg-slate-900 text-white shadow" : "text-slate-500 hover:text-slate-900"
               }`}
             >
-              {tab}
+              {tab === "reviews" ? "⭐ Reviews" : tab}
             </button>
           ))}
         </div>
@@ -242,8 +247,16 @@ const HostDashboard = () => {
                     <p className="text-lg font-black text-amber-500 mt-1">{queue[station.id]?.queueLength || 0}</p>
                   </div>
                   <div className="bg-slate-50 rounded-xl p-3">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase">Avg Value</p>
-                    <p className="text-lg font-black text-slate-900 mt-1">₹{parseFloat(stats[station.id]?.avgSessionValue || 0).toFixed(0)}</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase">Avg Rating</p>
+                    <div className="flex items-center gap-1 mt-1">
+                      <Star size={15} className="text-yellow-400 fill-yellow-400" />
+                      <p className="text-lg font-black text-slate-900">
+                        {reviews[station.id]?.avgRating ?? "—"}
+                      </p>
+                      <p className="text-xs text-slate-400 font-bold">
+                        ({reviews[station.id]?.total ?? 0})
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -408,6 +421,95 @@ const HostDashboard = () => {
                 ))
               )}
             </div>
+          </div>
+        )}
+
+        {/* REVIEWS TAB */}
+        {activeTab === "reviews" && (
+          <div className="space-y-8">
+            {stations.map(station => {
+              const stationReviews = reviews[station.id];
+              const reviewList = stationReviews?.reviews || [];
+              const avg = stationReviews?.avgRating;
+              return (
+                <div key={station.id} className="bg-white rounded-[24px] p-6 shadow-lg shadow-slate-100 border border-slate-100">
+                  {/* Station header */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="font-black text-slate-900 text-xl">{station.name}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        {avg ? (
+                          <>
+                            <div className="flex gap-0.5">
+                              {[1,2,3,4,5].map(s => (
+                                <Star key={s} size={14}
+                                  className={s <= Math.round(avg)
+                                    ? "text-yellow-400 fill-yellow-400"
+                                    : "text-slate-200 fill-slate-200"}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-sm font-black text-slate-700">{avg}</span>
+                            <span className="text-xs text-slate-400 font-bold">({stationReviews.total} review{stationReviews.total !== 1 ? 's' : ''})</span>
+                          </>
+                        ) : (
+                          <span className="text-sm text-slate-400 font-bold">No reviews yet</span>
+                        )}
+                      </div>
+                    </div>
+                    <StatusBadge status={station.status} />
+                  </div>
+
+                  {/* Review list */}
+                  {reviewList.length === 0 ? (
+                    <div className="text-center py-10 text-slate-400">
+                      <MessageSquare className="mx-auto mb-3 text-slate-300" size={40} />
+                      <p className="font-bold">No feedback received yet</p>
+                      <p className="text-xs mt-1">Reviews from users will appear here after completed rides.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {reviewList.map(review => (
+                        <motion.div
+                          key={review.id}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="flex items-start gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100"
+                        >
+                          {/* Avatar placeholder */}
+                          <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-green-500 rounded-xl flex items-center justify-center text-white font-black text-sm flex-shrink-0">
+                            {review.user_id?.slice(0, 2).toUpperCase()}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between flex-wrap gap-2">
+                              <div className="flex gap-0.5">
+                                {[1,2,3,4,5].map(s => (
+                                  <Star key={s} size={13}
+                                    className={s <= review.rating
+                                      ? "text-yellow-400 fill-yellow-400"
+                                      : "text-slate-300 fill-slate-300"}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-xs text-slate-400 font-bold">
+                                {review.createdAt ? new Date(review.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
+                              </span>
+                            </div>
+                            {review.feedback ? (
+                              <p className="text-sm text-slate-700 mt-1.5 leading-relaxed">
+                                &ldquo;{review.feedback}&rdquo;
+                              </p>
+                            ) : (
+                              <p className="text-xs text-slate-400 italic mt-1">No written feedback</p>
+                            )}
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

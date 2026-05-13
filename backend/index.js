@@ -27,6 +27,7 @@ const queueRoutes = require('./routes/queueRoutes');
 const invoiceRoutes = require('./routes/invoiceRoutes');
 const chargeNestRoutes = require('./routes/chargeNestRoutes');
 const chatbotRoutes = require('./routes/chatbotRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
 
 app.use('/api/stations', stationRoutes);
 app.use('/api/bookings', bookingRoutes);
@@ -38,6 +39,7 @@ app.use('/api/queue', queueRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/chargenest', chargeNestRoutes);
 app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // Basic Routes
 app.get('/', (req, res) => {

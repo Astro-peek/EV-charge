@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Map, Zap, LogOut, Trash2 } from "lucide-react";
+import { Calendar, Map, Zap, LogOut, Trash2, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 import Card from "../components/common/Card";
 import Button from "../components/common/Button";
+import RatingModal from "../components/common/RatingModal";
 import { bookingService, invoiceService } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 
@@ -13,6 +14,8 @@ const Dashboard = () => {
   const { user, logout } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [ratingBooking, setRatingBooking] = useState(null); // booking being rated
+  const [reviewedIds, setReviewedIds] = useState(new Set()); // bookings already reviewed
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -47,8 +50,24 @@ const Dashboard = () => {
     }
   };
 
+  // Called when user successfully submits a review
+  const handleReviewSubmitted = (bookingId) => {
+    setReviewedIds((prev) => new Set([...prev, bookingId]));
+    setRatingBooking(null);
+  };
+
   return (
     <DashboardLayout>
+      {/* Rating Modal */}
+      {ratingBooking && (
+        <RatingModal
+          booking={ratingBooking}
+          userId={user?.id}
+          onClose={() => setRatingBooking(null)}
+          onSubmitted={handleReviewSubmitted}
+        />
+      )}
+
       {/* 🔸 HEADER / LOGOUT */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
         <div>
@@ -116,7 +135,6 @@ const Dashboard = () => {
           >
             🗺️ Plan Trip
           </Button>
-
         </div>
       </div>
 
@@ -128,45 +146,67 @@ const Dashboard = () => {
             <p className="text-gray-500">Loading bookings...</p>
           ) : bookings.length > 0 ? (
             <div className="space-y-4">
-              {bookings.map((booking) => (
-                <div
-                  key={booking._id}
-                  className="flex justify-between items-center p-3 rounded-xl hover:bg-gray-50 transition border border-transparent hover:border-gray-100"
-                >
-                  <div>
-                    <p className="font-medium">{booking.station?.name || "Unknown Station"}</p>
-                    <p className="text-sm text-gray-500">{booking.station?.address || "N/A"}</p>
-                  </div>
-                  <div className="flex flex-col items-end gap-2">
-                    <span className="text-sm text-gray-500 block">
-                      {booking.start_time ? new Date(booking.start_time).toLocaleDateString() : "Invalid Date"}
-                    </span>
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      booking.status === 'active' ? 'bg-green-100 text-green-600' 
-                      : booking.status === 'completed' ? 'bg-blue-100 text-blue-600'
-                      : 'bg-gray-100 text-gray-600'
-                    }`}>
-                      {booking.status}
-                    </span>
-                    {(booking.status === 'active' || booking.status === 'completed') && (
-                      <a
-                        href={invoiceService.downloadInvoice(booking.id)}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-xs text-green-600 font-bold hover:underline flex items-center gap-1"
+              {bookings.map((booking) => {
+                const isCompleted = booking.status === "completed";
+                const alreadyReviewed = reviewedIds.has(booking.id);
+                return (
+                  <motion.div
+                    key={booking.id || booking._id}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex justify-between items-center p-3 rounded-xl hover:bg-gray-50 transition border border-transparent hover:border-gray-100"
+                  >
+                    <div>
+                      <p className="font-medium">{booking.station?.name || "Unknown Station"}</p>
+                      <p className="text-sm text-gray-500">{booking.station?.address || "N/A"}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      <span className="text-sm text-gray-500 block">
+                        {booking.start_time ? new Date(booking.start_time).toLocaleDateString() : "Invalid Date"}
+                      </span>
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        booking.status === "active" ? "bg-green-100 text-green-600"
+                        : booking.status === "completed" ? "bg-blue-100 text-blue-600"
+                        : "bg-gray-100 text-gray-600"
+                      }`}>
+                        {booking.status}
+                      </span>
+
+                      {/* ⭐ Rate Ride button — only for completed bookings */}
+                      {isCompleted && (
+                        <button
+                          onClick={() => setRatingBooking(booking)}
+                          className={`text-xs flex items-center gap-1 font-bold px-2.5 py-1.5 rounded-lg transition-all ${
+                            alreadyReviewed
+                              ? "bg-yellow-50 text-yellow-600 cursor-default"
+                              : "bg-yellow-400 text-white hover:bg-yellow-500"
+                          }`}
+                        >
+                          <Star size={11} className={alreadyReviewed ? "fill-yellow-500 text-yellow-500" : "fill-white text-white"} />
+                          {alreadyReviewed ? "Reviewed" : "Rate Ride"}
+                        </button>
+                      )}
+
+                      {(booking.status === "active" || booking.status === "completed") && (
+                        <a
+                          href={invoiceService.downloadInvoice(booking.id)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-xs text-green-600 font-bold hover:underline flex items-center gap-1"
+                        >
+                          📄 Download Invoice
+                        </a>
+                      )}
+                      <button
+                        onClick={() => handleDeleteBooking(booking.id || booking._id)}
+                        className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 font-bold mt-1"
                       >
-                        📄 Download Invoice
-                      </a>
-                    )}
-                    <button
-                      onClick={() => handleDeleteBooking(booking.id || booking._id)}
-                      className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 font-bold mt-1"
-                    >
-                      <Trash2 size={12} /> Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
+                        <Trash2 size={12} /> Delete
+                      </button>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-10">
