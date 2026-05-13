@@ -6,7 +6,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import Card from "../components/common/Card";
 import Button from "../components/common/Button";
 import RatingModal from "../components/common/RatingModal";
-import { bookingService, invoiceService } from "../utils/api";
+import { bookingService, invoiceService, queueService } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 
 const Dashboard = () => {
@@ -47,6 +47,24 @@ const Dashboard = () => {
     } catch (error) {
       console.error("Error deleting booking:", error);
       alert("Failed to delete booking.");
+    }
+  };
+
+  const handleCompleteCharge = async (booking) => {
+    if (!window.confirm("Are you sure you want to complete this charging session?")) return;
+    try {
+      await queueService.completeBooking(booking.id);
+      
+      // Update local state to reflect completion
+      setBookings((prev) => 
+        prev.map((b) => (b.id === booking.id ? { ...b, status: "completed" } : b))
+      );
+
+      // Open rating modal immediately
+      setRatingBooking({ ...booking, status: "completed" });
+    } catch (error) {
+      console.error("Error completing charge:", error);
+      alert("Failed to complete charging session.");
     }
   };
 
@@ -173,19 +191,30 @@ const Dashboard = () => {
                       </span>
 
                       {/* ⭐ Rate Ride button — for active or completed bookings */}
-                      {isReviewable && (
-                        <button
-                          onClick={() => setRatingBooking(booking)}
-                          className={`text-xs flex items-center gap-1 font-bold px-2.5 py-1.5 rounded-lg transition-all ${
-                            alreadyReviewed
-                              ? "bg-yellow-50 text-yellow-600 cursor-default"
-                              : "bg-yellow-400 text-white hover:bg-yellow-500"
-                          }`}
-                        >
-                          <Star size={11} className={alreadyReviewed ? "fill-yellow-500 text-yellow-500" : "fill-white text-white"} />
-                          {alreadyReviewed ? "Reviewed" : "Rate Ride"}
-                        </button>
-                      )}
+                      <div className="flex gap-2">
+                        {booking.status === "active" && (
+                          <button
+                            onClick={() => handleCompleteCharge(booking)}
+                            className="text-xs bg-green-500 text-white font-black px-3 py-1.5 rounded-lg hover:bg-green-600 transition-all flex items-center gap-1 shadow-sm"
+                          >
+                            ⚡ Complete Charge
+                          </button>
+                        )}
+
+                        {isReviewable && (
+                          <button
+                            onClick={() => setRatingBooking(booking)}
+                            className={`text-xs flex items-center gap-1 font-bold px-2.5 py-1.5 rounded-lg transition-all ${
+                              alreadyReviewed
+                                ? "bg-yellow-50 text-yellow-600 cursor-default"
+                                : "bg-yellow-400 text-white hover:bg-yellow-500 shadow-sm"
+                            }`}
+                          >
+                            <Star size={11} className={alreadyReviewed ? "fill-yellow-500 text-yellow-500" : "fill-white text-white"} />
+                            {alreadyReviewed ? "Reviewed" : "Rate Ride"}
+                          </button>
+                        )}
+                      </div>
 
                       {(booking.status === "active" || booking.status === "completed") && (
                         <a
