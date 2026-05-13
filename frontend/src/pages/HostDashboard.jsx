@@ -7,7 +7,7 @@ import {
   CheckCircle, AlertCircle, RefreshCw, Download, BarChart3,
   Wifi, WifiOff, Star, IndianRupee, Trash2
 } from "lucide-react";
-import { hostService, queueService, analyticsService, invoiceService } from "../utils/api";
+import { hostService, queueService, analyticsService, invoiceService, bookingService } from "../utils/api";
 
 const StatusBadge = ({ status }) => {
   const map = {
@@ -106,6 +106,17 @@ const HostDashboard = () => {
       await fetchData();
     } catch (err) { alert("Failed to complete booking"); }
     finally { setCompletingBooking(null); }
+  };
+
+  const handleDeleteBooking = async (bookingId) => {
+    if (!window.confirm("Are you sure you want to delete this booking?")) return;
+    try {
+      await bookingService.deleteBooking(bookingId);
+      setBookings((prev) => prev.filter((b) => b.id !== bookingId));
+    } catch (error) {
+      console.error("Error deleting booking:", error);
+      alert("Failed to delete booking.");
+    }
   };
 
   // Aggregate stats
@@ -385,6 +396,13 @@ const HostDashboard = () => {
                           <Download size={12} /> Invoice
                         </a>
                       )}
+                      <button
+                        onClick={() => handleDeleteBooking(booking.id)}
+                        className="flex items-center justify-center p-2 rounded-xl bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-all border border-slate-100"
+                        title="Delete Booking"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
                   </div>
                 ))

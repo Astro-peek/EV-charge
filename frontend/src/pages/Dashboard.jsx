@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Map, Zap, LogOut } from "lucide-react";
+import { Calendar, Map, Zap, LogOut, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 import Card from "../components/common/Card";
@@ -34,6 +34,17 @@ const Dashboard = () => {
   const handleLogout = async () => {
     await logout();
     navigate("/");
+  };
+
+  const handleDeleteBooking = async (bookingId) => {
+    if (!window.confirm("Are you sure you want to delete this booking?")) return;
+    try {
+      await bookingService.deleteBooking(bookingId);
+      setBookings((prev) => prev.filter((b) => b.id !== bookingId && b._id !== bookingId));
+    } catch (error) {
+      console.error("Error deleting booking:", error);
+      alert("Failed to delete booking.");
+    }
   };
 
   return (
@@ -147,6 +158,12 @@ const Dashboard = () => {
                         📄 Download Invoice
                       </a>
                     )}
+                    <button
+                      onClick={() => handleDeleteBooking(booking.id || booking._id)}
+                      className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 font-bold mt-1"
+                    >
+                      <Trash2 size={12} /> Delete
+                    </button>
                   </div>
                 </div>
               ))}

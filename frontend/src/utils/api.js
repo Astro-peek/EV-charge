@@ -30,6 +30,7 @@ export const bookingService = {
   // Using Express Backend
   getBookings: (userId) => api.get("/bookings", { params: { userId } }),
   createBooking: (data) => api.post("/bookings", data),
+  deleteBooking: (bookingId) => api.delete(`/bookings/${bookingId}`),
   
   // Direct Supabase Option
   getBookingsSupabase: async (userId) => {
