@@ -1,4 +1,6 @@
 # IntelliRide ⚡ – Smart EV Ecosystem
+**Team: civicshield**
+
 
 [![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg)](https://github.com/Astro-peek/EV-charge)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
