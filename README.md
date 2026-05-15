@@ -163,7 +163,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ---
 
 ## ✉️ Contact
-
+email : parasgupta548@gmail.com
 **Paras Gupta**  
 GitHub: [@Astro-peek](https://github.com/Astro-peek)  
 Project Link: [https://github.com/Astro-peek/EV-charge](https://github.com/Astro-peek/EV-charge)
