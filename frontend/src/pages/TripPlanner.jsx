@@ -20,7 +20,8 @@ import {
   Marker,
   Popup,
   Polyline,
-  useMap
+  useMap,
+  Tooltip
 } from "react-leaflet";
 import L from "leaflet";
 import { userIcon, premiumStationIcon, unselectedStationIcon } from "../utils/mapIcons";
@@ -640,6 +641,9 @@ const TripPlanner = () => {
                 {/* Unselected Network Stations */}
                 {result?.allStations?.filter(s => s && s.lat && s.lng && !(result?.chargingStops || []).some(stop => stop.id === s.id)).map((station, i) => (
                   <Marker key={`network-${i}`} position={[station.lat, station.lng]} icon={unselectedStationIcon}>
+                    <Tooltip direction="top" offset={[0, -35]} opacity={1} className="font-bold text-xs bg-white text-gray-900 border-none shadow-lg rounded-xl px-3 py-1.5">
+                      {station.name || station.location}
+                    </Tooltip>
                     <Popup className="premium-popup">
                       <div className="p-2 min-w-[100px]">
                         <h4 className="font-black text-slate-900 text-sm leading-tight">{station.name || station.location}</h4>
@@ -654,6 +658,9 @@ const TripPlanner = () => {
                   if (!stop || stop.warning || !stop.lat || !stop.lng) return null;
                   return (
                     <Marker key={`stop-${i}`} position={[stop.lat, stop.lng]} icon={premiumStationIcon}>
+                      <Tooltip direction="top" offset={[0, -35]} opacity={1} className="font-bold text-xs bg-white text-gray-900 border-none shadow-lg rounded-xl px-3 py-1.5">
+                        {stop.name || stop.location}
+                      </Tooltip>
                       <Popup className="premium-popup">
                         <div className="p-3 min-w-[180px]">
                           <div className="flex items-center gap-2 mb-3">

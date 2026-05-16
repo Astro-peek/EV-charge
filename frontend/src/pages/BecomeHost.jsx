@@ -16,7 +16,7 @@ import {
   MapPin,
   Search
 } from "lucide-react";
-import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap, Tooltip } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { userIcon, premiumStationIcon } from "../utils/mapIcons";
@@ -30,7 +30,11 @@ function LocationMarker({ position, setPosition }) {
     },
   });
   return position === null ? null : (
-    <Marker position={position} icon={premiumStationIcon}></Marker>
+    <Marker position={position} icon={premiumStationIcon}>
+      <Tooltip direction="top" offset={[0, -35]} opacity={1} permanent className="font-bold text-xs bg-white text-gray-900 border-none shadow-lg rounded-xl px-3 py-1.5">
+        Selected Location
+      </Tooltip>
+    </Marker>
   );
 }
 

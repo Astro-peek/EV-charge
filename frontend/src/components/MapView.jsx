@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap } from "react-leaflet";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
@@ -14,6 +14,16 @@ L.Icon.Default.mergeOptions({
   shadowUrl:
     "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
+
+const MapRecenter = ({ center }) => {
+  const map = useMap();
+  useEffect(() => {
+    if (center) {
+      map.flyTo(center, 13, { duration: 1.5 });
+    }
+  }, [center, map]);
+  return null;
+};
 
 const MapView = () => {
   const navigate = useNavigate();
@@ -55,6 +65,7 @@ const MapView = () => {
       <TileLayer
         url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
       />
+      <MapRecenter center={position} />
 
       {/* ✅ User Location */}
       <Marker position={position} icon={userIcon}>
@@ -66,6 +77,9 @@ const MapView = () => {
       {/* ✅ EV Stations */}
       {stations.map((station) => (
         <Marker key={station.id} position={station.position} icon={premiumStationIcon}>
+          <Tooltip direction="top" offset={[0, -35]} opacity={1} className="font-bold text-xs bg-white text-gray-900 border-none shadow-lg rounded-xl px-3 py-1.5">
+            {station.name}
+          </Tooltip>
           <Popup>
             <div className="min-w-[160px] p-1 text-center">
               <h3 className="font-bold text-slate-800 leading-tight">{station.name}</h3>

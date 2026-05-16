@@ -6,7 +6,7 @@ import {
   Star, Battery, ShieldCheck, CreditCard,
   Wifi, Coffee, Car, Phone
 } from "lucide-react";
-import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline, Tooltip, ZoomControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { stationService, bookingService, paymentService, analyticsService, queueService } from "../utils/api";
@@ -48,6 +48,7 @@ const FindAndBook = () => {
   const [selectedDuration, setSelectedDuration] = useState(1); // Hours
   const [waitTimes, setWaitTimes] = useState({}); // stationId -> waitData
   const [occupancy, setOccupancy] = useState({}); // stationId -> count
+  const [mapInstance, setMapInstance] = useState(null);
 
   const listRef = useRef(null);
 
@@ -369,7 +370,9 @@ const FindAndBook = () => {
           zoom={13}
           className="h-full w-full grayscale-[0.2] contrast-[1.1]"
           zoomControl={false}
+          ref={setMapInstance}
         >
+          <ZoomControl position="bottomright" />
           <TileLayer 
             url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" 
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -394,6 +397,9 @@ const FindAndBook = () => {
                 },
               }}
             >
+              <Tooltip direction="top" offset={[0, -35]} opacity={1} className="font-bold text-xs bg-white text-gray-900 border-none shadow-lg rounded-xl px-3 py-1.5">
+                {s.name}
+              </Tooltip>
               <Popup className="premium-popup">
                 <div className="p-2 min-w-[120px]">
                   <h3 className="font-black text-gray-900 leading-tight">{s.name}</h3>
@@ -718,7 +724,11 @@ const FindAndBook = () => {
         {/* MAP CONTROLS */}
         <div className="absolute top-24 right-6 flex flex-col gap-2 z-20">
            <button 
-             onClick={() => setUserLocation(userLocation)} 
+             onClick={() => {
+               if (userLocation && mapInstance) {
+                 mapInstance.flyTo(userLocation, 14, { duration: 1.5 });
+               }
+             }} 
              className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-gray-600 hover:text-green-600 transition-colors"
            >
               <Navigation size={20} />

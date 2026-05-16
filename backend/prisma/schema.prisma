@@ -59,6 +59,7 @@ model Review {
   feedback   String?
   createdAt  DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
   booking    Booking   @relation(fields: [booking_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user       User      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("reviews")
   @@schema("public")
@@ -111,6 +112,7 @@ model User {
   webauthn_credentials        webauthn_credentials[]
   bookings                    Booking[]
   stations                    Station[]
+  reviews                     Review[]
 
   @@index([created_at(sort: Desc)], map: "idx_users_created_at_desc")
   @@index([email], map: "idx_users_email")
