@@ -49,6 +49,7 @@ const FindAndBook = () => {
   const [waitTimes, setWaitTimes] = useState({}); // stationId -> waitData
   const [occupancy, setOccupancy] = useState({}); // stationId -> count
   const [mapInstance, setMapInstance] = useState(null);
+  const [viewMode, setViewMode] = useState("list"); // 'list' or 'map' on mobile
 
   const listRef = useRef(null);
 
@@ -233,10 +234,10 @@ const FindAndBook = () => {
   };
 
   return (
-    <div className="flex h-screen bg-white overflow-hidden">
+    <div className="flex h-[calc(100vh-80px)] bg-white overflow-hidden relative">
       {/* LEFT SIDEBAR: LIST & SEARCH */}
-      <div className="w-full lg:w-[450px] flex flex-col border-r border-gray-100 z-10 bg-white shadow-2xl shadow-gray-200/50">
-        <div className="p-6 pt-24 border-b border-gray-50 bg-white/80 backdrop-blur-md sticky top-0 z-20">
+      <div className={`w-full lg:w-[450px] flex flex-col border-r border-gray-100 z-10 bg-white shadow-2xl shadow-gray-200/50 ${viewMode === 'list' ? 'flex' : 'hidden lg:flex'}`}>
+        <div className="p-6 pt-6 border-b border-gray-50 bg-white/80 backdrop-blur-md sticky top-0 z-20">
           <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-2">
             Find <Zap className="text-green-500" fill="currentColor" /> Charge
           </h1>
@@ -364,7 +365,7 @@ const FindAndBook = () => {
       </div>
 
       {/* RIGHT SIDE: MAP & DETAIL OVERLAY */}
-      <div className="flex-1 relative">
+      <div className={`flex-1 relative ${viewMode === 'map' ? 'block' : 'hidden lg:block'}`}>
         <MapContainer
           center={userLocation || [28.6139, 77.2090]}
           zoom={13}
@@ -740,6 +741,18 @@ const FindAndBook = () => {
            </button>
         </div>
       </div>
+
+      {/* FLOATING TOGGLE BUTTON FOR MOBILE */}
+      <button
+        onClick={() => setViewMode(viewMode === 'list' ? 'map' : 'list')}
+        className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3.5 rounded-full shadow-2xl flex items-center gap-2.5 font-black z-[40] text-sm hover:scale-105 active:scale-95 transition-all border border-white/10"
+      >
+        {viewMode === 'list' ? (
+          <>🗺️ Show Map</>
+        ) : (
+          <>📋 Show List</>
+        )}
+      </button>
 
       <style dangerouslySetInnerHTML={{ __html: `
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }

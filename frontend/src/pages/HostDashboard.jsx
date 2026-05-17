@@ -163,16 +163,16 @@ const HostDashboard = () => {
       {/* HEADER */}
       <div className="bg-slate-900 text-white px-6 py-8">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">Host Portal</p>
-              <h1 className="text-3xl font-black mt-1">
+              <h1 className="text-2xl sm:text-3xl font-black mt-1">
                 Welcome back, {user?.user_metadata?.full_name || user?.email?.split("@")[0]} 👋
               </h1>
             </div>
             <button
               onClick={fetchData}
-              className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-bold transition-all"
+              className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-bold transition-all w-full sm:w-auto"
             >
               <RefreshCw size={16} />
               Refresh
@@ -376,19 +376,19 @@ const HostDashboard = () => {
                 </div>
               ) : (
                 bookings.map(booking => (
-                  <div key={booking.id} className="flex items-center justify-between px-6 py-4 hover:bg-slate-50 transition-all">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
+                  <div key={booking.id} className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between px-6 py-4 hover:bg-slate-50 transition-all">
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
                         <Zap size={18} className="text-green-500" />
                       </div>
-                      <div>
-                        <p className="font-black text-slate-900 text-sm">{booking.station?.name}</p>
+                      <div className="min-w-0">
+                        <p className="font-black text-slate-900 text-sm truncate">{booking.station?.name}</p>
                         <p className="text-xs text-slate-400">
                           {new Date(booking.start_time).toLocaleDateString()} · {booking.status}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-start sm:justify-end">
                       <span className={`text-xs font-black px-3 py-1 rounded-full ${
                         booking.status === "completed" ? "bg-green-100 text-green-700"
                           : booking.status === "active" ? "bg-amber-100 text-amber-700"
@@ -404,7 +404,7 @@ const HostDashboard = () => {
                           href={invoiceService.downloadInvoice(booking.id)}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-black transition-all"
+                          className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-black transition-all flex-1 sm:flex-initial justify-center"
                         >
                           <Download size={12} /> Invoice
                         </a>

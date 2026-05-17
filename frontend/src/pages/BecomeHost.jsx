@@ -209,13 +209,13 @@ const BecomeHost = () => {
             className="max-w-2xl"
           >
 
-            <h1 className="text-5xl md:text-7xl font-black text-white leading-none">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl font-black text-white leading-tight">
               Turn Any Space Into a
               <br />
               Charging Station
             </h1>
 
-            <p className="mt-8 text-xl text-gray-200 leading-relaxed max-w-xl">
+            <p className="mt-6 text-base sm:text-lg md:text-xl text-gray-200 leading-relaxed max-w-xl">
               Your dhaba, home, or roadside shop can earn you money while
               helping EV drivers on their journey. Like Airbnb, but for
               chargers.

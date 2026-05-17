@@ -29,13 +29,13 @@ const Hero = () => {
             India’s Smart EV Ecosystem ⚡
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold leading-tight text-gray-900">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight text-gray-900">
             Charge.
             <span className="text-primary"> Navigate.</span>
             Drive Smarter.
           </h1>
 
-          <p className="text-gray-600 text-lg mt-6">
+          <p className="text-gray-600 text-base sm:text-lg mt-6">
             Plan routes, book charging slots, and power your EV journey —
             all in one intelligent platform.
           </p>

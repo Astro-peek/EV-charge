@@ -601,7 +601,7 @@ const TripPlanner = () => {
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="bg-white rounded-[32px] overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-100 relative h-[600px]"
+              className="bg-white rounded-[32px] overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-100 relative h-[380px] sm:h-[480px] lg:h-[600px]"
             >
               <div className="absolute top-6 left-6 z-[1000] flex gap-2">
                 <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-slate-100 flex items-center gap-2">

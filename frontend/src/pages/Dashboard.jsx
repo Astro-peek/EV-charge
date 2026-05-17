@@ -172,17 +172,17 @@ const Dashboard = () => {
                     key={booking.id || booking._id}
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex justify-between items-center p-3 rounded-xl hover:bg-gray-50 transition border border-transparent hover:border-gray-100"
+                    className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 rounded-xl hover:bg-gray-50 transition border border-transparent hover:border-gray-100 gap-4"
                   >
-                    <div>
-                      <p className="font-medium">{booking.station?.name || "Unknown Station"}</p>
-                      <p className="text-sm text-gray-500">{booking.station?.address || "N/A"}</p>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-gray-900 truncate">{booking.station?.name || "Unknown Station"}</p>
+                      <p className="text-sm text-gray-500 truncate">{booking.station?.address || "N/A"}</p>
                     </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <span className="text-sm text-gray-500 block">
+                    <div className="flex flex-col items-start sm:items-end gap-2 w-full sm:w-auto flex-shrink-0">
+                      <span className="text-sm text-gray-500">
                         {booking.start_time ? new Date(booking.start_time).toLocaleDateString() : "Invalid Date"}
                       </span>
-                      <span className={`text-xs px-2 py-1 rounded-full ${
+                      <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
                         booking.status === "active" ? "bg-green-100 text-green-600"
                         : booking.status === "completed" ? "bg-blue-100 text-blue-600"
                         : "bg-gray-100 text-gray-600"
@@ -191,11 +191,11 @@ const Dashboard = () => {
                       </span>
 
                       {/* ⭐ Rate Ride button — for active or completed bookings */}
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap sm:flex-nowrap w-full sm:w-auto">
                         {booking.status === "active" && (
                           <button
                             onClick={() => handleCompleteCharge(booking)}
-                            className="text-xs bg-green-500 text-white font-black px-3 py-1.5 rounded-lg hover:bg-green-600 transition-all flex items-center gap-1 shadow-sm"
+                            className="text-xs bg-green-500 text-white font-black px-3 py-1.5 rounded-lg hover:bg-green-600 transition-all flex items-center gap-1 shadow-sm flex-1 sm:flex-initial justify-center"
                           >
                             ⚡ Complete Charge
                           </button>
@@ -204,7 +204,7 @@ const Dashboard = () => {
                         {isReviewable && (
                           <button
                             onClick={() => setRatingBooking(booking)}
-                            className={`text-xs flex items-center gap-1 font-bold px-2.5 py-1.5 rounded-lg transition-all ${
+                            className={`text-xs flex items-center gap-1 font-bold px-2.5 py-1.5 rounded-lg transition-all flex-1 sm:flex-initial justify-center ${
                               alreadyReviewed
                                 ? "bg-yellow-50 text-yellow-600 cursor-default"
                                 : "bg-yellow-400 text-white hover:bg-yellow-500 shadow-sm"
@@ -221,14 +221,14 @@ const Dashboard = () => {
                           href={invoiceService.downloadInvoice(booking.id)}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-xs text-green-600 font-bold hover:underline flex items-center gap-1"
+                          className="text-xs text-green-600 font-bold hover:underline flex items-center gap-1 mt-1"
                         >
                           📄 Download Invoice
                         </a>
                       )}
                       <button
                         onClick={() => handleDeleteBooking(booking.id || booking._id)}
-                        className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 font-bold mt-1"
+                        className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 font-bold mt-1.5"
                       >
                         <Trash2 size={12} /> Delete
                       </button>
