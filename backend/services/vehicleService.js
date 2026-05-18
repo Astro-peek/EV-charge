@@ -71,4 +71,29 @@ const getVehicleProfile = async (registrationNumber) => {
     return newProfile;
 };
 
-module.exports = { getVehicleProfile };
+const registerVehicleProfile = async (registrationNumber, profileData) => {
+    const normalizedReg = registrationNumber.toUpperCase().replace(/\s/g, '');
+    
+    const profile = await prisma.vehicleProfile.upsert({
+        where: { reg_number: normalizedReg },
+        update: {
+            model: profileData.model,
+            connector_type: profileData.connector_type,
+            battery_capacity: profileData.battery_capacity,
+            max_voltage: profileData.max_voltage || "Unknown",
+            type: profileData.type || "4W"
+        },
+        create: {
+            reg_number: normalizedReg,
+            model: profileData.model,
+            connector_type: profileData.connector_type,
+            battery_capacity: profileData.battery_capacity,
+            max_voltage: profileData.max_voltage || "Unknown",
+            type: profileData.type || "4W"
+        }
+    });
+
+    return profile;
+};
+
+module.exports = { getVehicleProfile, registerVehicleProfile };

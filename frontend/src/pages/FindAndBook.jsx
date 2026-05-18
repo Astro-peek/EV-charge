@@ -9,7 +9,7 @@ import {
 import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline, Tooltip, ZoomControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { stationService, bookingService, paymentService, analyticsService, queueService } from "../utils/api";
+import { stationService, bookingService, paymentService, analyticsService, queueService, vehicleService } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 import Button from "../components/common/Button";
 import { userIcon, premiumStationIcon, selectedStationIcon } from "../utils/mapIcons";
@@ -51,7 +51,44 @@ const FindAndBook = () => {
   const [mapInstance, setMapInstance] = useState(null);
   const [viewMode, setViewMode] = useState("list"); // 'list' or 'map' on mobile
 
+  // Smart VehicleID Integration States
+  const [smartVehicle, setSmartVehicle] = useState(null);
+  const [smartSearch, setSmartSearch] = useState("");
+  const [smartLoading, setSmartLoading] = useState(false);
+  const [showSmartDrawer, setShowSmartDrawer] = useState(false);
+
   const listRef = useRef(null);
+
+  useEffect(() => {
+    const cached = localStorage.getItem("registeredVehicle");
+    if (cached) {
+      setSmartVehicle(JSON.parse(cached));
+    }
+  }, []);
+
+  const handleSmartLoad = async () => {
+    if (!smartSearch) return;
+    setSmartLoading(true);
+    try {
+      const formattedReg = smartSearch.toUpperCase().replace(/\s/g, '');
+      const res = await vehicleService.getProfile(formattedReg);
+      if (res.data) {
+        const vehicleInfo = {
+          vehicle: res.data.model,
+          connector: res.data.connector_type,
+          battery: res.data.battery_capacity,
+          number: res.data.reg_number || formattedReg
+        };
+        setSmartVehicle(vehicleInfo);
+        localStorage.setItem("registeredVehicle", JSON.stringify(vehicleInfo));
+        setShowSmartDrawer(false);
+      }
+    } catch (e) {
+      alert("Registration number not found in VAHAN mock registry.");
+    } finally {
+      setSmartLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -108,8 +145,16 @@ const FindAndBook = () => {
   const filteredStations = stations.filter((s) => {
     const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) ||
       (s.address && s.address.toLowerCase().includes(search.toLowerCase()));
+    
+    let matchesSmart = true;
+    if (smartVehicle) {
+      matchesSmart = s.connector_types?.some(
+        c => c.toLowerCase() === smartVehicle.connector.toLowerCase()
+      );
+    }
+
     const matchesFilter = filterType === "all" || s.type?.toLowerCase() === filterType;
-    return matchesSearch && matchesFilter;
+    return matchesSearch && matchesFilter && matchesSmart;
   });
 
   const handleBooking = async () => {
@@ -268,6 +313,72 @@ const FindAndBook = () => {
                 {t}
               </button>
             ))}
+          </div>
+
+          {/* Smart VehicleID integration block */}
+          <div className="mt-4 p-4 rounded-3xl bg-slate-950 text-white border border-slate-900 shadow-inner">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-1.5">
+                <span className="text-emerald-400 font-bold text-xs uppercase tracking-wider flex items-center gap-1">
+                  <Zap size={14} className="fill-emerald-400" />
+                  VehicleID Grid Filter
+                </span>
+              </div>
+              <button
+                onClick={() => setShowSmartDrawer(!showSmartDrawer)}
+                className="text-[10px] font-black uppercase text-emerald-400 hover:underline bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-xl transition"
+              >
+                {smartVehicle ? "Modify EV" : "Scan / Connect"}
+              </button>
+            </div>
+
+            {smartVehicle ? (
+              <div className="mt-3 flex items-center justify-between bg-slate-900/60 p-3 rounded-2xl border border-emerald-500/20 text-xs">
+                <div>
+                  <p className="font-bold text-slate-100">{smartVehicle.vehicle}</p>
+                  <p className="text-[10px] text-emerald-400 font-semibold uppercase mt-0.5 tracking-wider">
+                    {smartVehicle.number} • {smartVehicle.connector}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setSmartVehicle(null);
+                    localStorage.removeItem("registeredVehicle");
+                  }}
+                  className="text-[10px] font-black text-red-400 hover:text-red-300 ml-4 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl transition-all"
+                >
+                  Reset
+                </button>
+              </div>
+            ) : (
+              <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">
+                Connect your VehicleID to filter compatible chargers automatically in real-time.
+              </p>
+            )}
+
+            {showSmartDrawer && !smartVehicle && (
+              <div className="mt-3.5 space-y-2 border-t border-slate-900 pt-3">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Plate ID (e.g. MH12AB1234)"
+                    value={smartSearch}
+                    onChange={(e) => setSmartSearch(e.target.value)}
+                    className="flex-1 px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl outline-none focus:border-emerald-500 text-xs font-semibold uppercase placeholder:normal-case"
+                  />
+                  <button
+                    onClick={handleSmartLoad}
+                    disabled={smartLoading}
+                    className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black px-4 rounded-xl text-xs disabled:opacity-50 transition"
+                  >
+                    {smartLoading ? "..." : "Load"}
+                  </button>
+                </div>
+                <span className="text-[9px] text-slate-500 block">
+                  Mock VAHAN examples: MH12AB1234, DL3CDE5678, KA01EF9012, UP16GH3456
+                </span>
+              </div>
+            )}
           </div>
         </div>
 

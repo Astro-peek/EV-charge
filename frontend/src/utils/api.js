@@ -94,4 +94,9 @@ export const reviewService = {
   getForBooking: (bookingId) => api.get(`/reviews/booking/${bookingId}`),
 };
 
+export const vehicleService = {
+  getProfile: (regNumber) => api.get(`/vehicles/${regNumber}`),
+  registerProfile: (data) => api.post("/vehicles/register", data),
+};
+
 export default api;

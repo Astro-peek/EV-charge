@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Calendar, Map, Zap, LogOut, Trash2, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { QRCodeSVG } from "qrcode.react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import Card from "../components/common/Card";
 import Button from "../components/common/Button";
@@ -16,6 +17,14 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [ratingBooking, setRatingBooking] = useState(null); // booking being rated
   const [reviewedIds, setReviewedIds] = useState(new Set()); // bookings already reviewed
+  const [vehicle, setVehicle] = useState(null); // active VehicleID profile
+
+  useEffect(() => {
+    const cached = localStorage.getItem("registeredVehicle");
+    if (cached) {
+      setVehicle(JSON.parse(cached));
+    }
+  }, []);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -137,6 +146,67 @@ const Dashboard = () => {
         </Card>
       </div>
 
+      {/* 🔸 VEHICLEID GRID PASS */}
+      {vehicle && (
+        <div className="mt-12">
+          <h3 className="text-xl font-semibold mb-6">Your Unified VehicleID</h3>
+          <div className="bg-slate-950 text-white rounded-[32px] border border-slate-900 p-6 md:p-8 flex flex-col md:flex-row items-center gap-8 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 blur-xl rounded-full"></div>
+            
+            {/* Left Column: QR Code */}
+            <div className="bg-white p-4 rounded-3xl shadow-inner border border-slate-200 flex-shrink-0">
+              <QRCodeSVG
+                value={JSON.stringify({
+                  owner: vehicle.owner,
+                  vehicle: vehicle.vehicle,
+                  connector: vehicle.connector,
+                  battery: vehicle.battery,
+                  number: vehicle.number?.toUpperCase().replace(/\s/g, ''),
+                  protocol: "VehicleID v1.2"
+                })}
+                size={120}
+                bgColor="#ffffff"
+                fgColor="#020617"
+                level="H"
+                includeMargin={true}
+              />
+            </div>
+
+            {/* Right Column: Profile Specs */}
+            <div className="flex-1 w-full space-y-4">
+              <div className="flex justify-between items-start border-b border-slate-900 pb-3">
+                <div>
+                  <h4 className="text-xs uppercase tracking-widest font-black text-emerald-400">INTELLIRIDE PASS</h4>
+                  <p className="text-lg font-bold text-slate-100 uppercase tracking-wide mt-1">{vehicle.vehicle}</p>
+                </div>
+                <span className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
+                  ACTIVE SYNCED
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <p className="text-slate-500 text-xs">Owner</p>
+                  <p className="font-bold text-slate-200 mt-1">{vehicle.owner}</p>
+                </div>
+                <div>
+                  <p className="text-slate-500 text-xs">Plate ID</p>
+                  <p className="font-bold text-slate-200 mt-1 uppercase tracking-wider">{vehicle.number}</p>
+                </div>
+                <div>
+                  <p className="text-slate-500 text-xs">Connector</p>
+                  <p className="font-bold text-emerald-400 mt-1">{vehicle.connector}</p>
+                </div>
+                <div>
+                  <p className="text-slate-500 text-xs">Battery Pack</p>
+                  <p className="font-bold text-slate-200 mt-1">{vehicle.battery}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 🔸 QUICK ACTIONS */}
       <div className="mt-12">
         <h3 className="text-xl font-semibold mb-6">Quick Actions</h3>
@@ -152,6 +222,12 @@ const Dashboard = () => {
             className="bg-gradient-to-r from-blue-500 to-indigo-500 h-24 text-lg"
           >
             🗺️ Plan Trip
+          </Button>
+          <Button
+            onClick={() => navigate("/vehicle-id")}
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 h-24 text-lg"
+          >
+            🚗 Manage VehicleID QR
           </Button>
         </div>
       </div>
