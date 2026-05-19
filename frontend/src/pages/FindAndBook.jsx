@@ -120,6 +120,10 @@ const FindAndBook = () => {
             price_per_unit: s.price_per_unit || 12.50 // Fallback price
           };
         });
+
+        // Sort stations by rating in descending order
+        enriched.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
+
         setStations(enriched);
 
         // Fetch wait times + occupancy for all stations in background
