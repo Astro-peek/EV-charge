@@ -91,11 +91,34 @@ const FindAndBook = () => {
   };
 
   useEffect(() => {
+    const geoOptions = {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0,
+    };
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => setUserLocation([pos.coords.latitude, pos.coords.longitude]),
-        (err) => console.warn("Geolocation denied", err)
+        (pos) => {
+          setUserLocation([pos.coords.latitude, pos.coords.longitude]);
+        },
+        (err) => {
+          console.warn("Geolocation error:", err.message);
+          // Fallback: try low-accuracy as last resort
+          navigator.geolocation.getCurrentPosition(
+            (pos) => setUserLocation([pos.coords.latitude, pos.coords.longitude]),
+            () => {
+              // Final fallback: use India centroid so map is still useful
+              setUserLocation([20.5937, 78.9629]);
+            },
+            { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
+          );
+        },
+        geoOptions
       );
+    } else {
+      // Browser doesn't support geolocation
+      setUserLocation([20.5937, 78.9629]);
     }
 
     const fetchStations = async () => {

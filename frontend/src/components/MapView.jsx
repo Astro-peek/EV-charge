@@ -30,14 +30,31 @@ const MapView = () => {
   const [position, setPosition] = useState([23.2599, 77.4126]); // Bhopal default
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setPosition([pos.coords.latitude, pos.coords.longitude]);
-      },
-      () => {
-        console.log("Location permission denied");
-      }
-    );
+    const geoOptions = {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0,
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setPosition([pos.coords.latitude, pos.coords.longitude]);
+        },
+        (err) => {
+          console.warn("Geolocation error:", err.message);
+          // Fallback: try low-accuracy
+          navigator.geolocation.getCurrentPosition(
+            (pos) => setPosition([pos.coords.latitude, pos.coords.longitude]),
+            () => console.log("Location permission denied, using default"),
+            { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
+          );
+        },
+        geoOptions
+      );
+    } else {
+      console.warn("Geolocation not supported by this browser");
+    }
   }, []);
 
   // ✅ Dummy EV stations (you can later fetch from API)

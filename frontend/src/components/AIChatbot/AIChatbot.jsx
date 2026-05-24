@@ -105,7 +105,11 @@ const AIChatbot = () => {
       
       try {
         const position = await new Promise((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0,
+          });
         });
         userLocation = {
           lat: position.coords.latitude,
@@ -113,7 +117,23 @@ const AIChatbot = () => {
         };
         console.log('Using real user location:', userLocation);
       } catch (geoError) {
-        console.warn('Geolocation failed or denied, using fallback:', geoError.message);
+        // Fallback: try with low accuracy
+        try {
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: false,
+              timeout: 8000,
+              maximumAge: 60000,
+            });
+          });
+          userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          console.log('Using low-accuracy fallback location:', userLocation);
+        } catch (fallbackErr) {
+          console.warn('Geolocation failed, using fallback (New Delhi):', fallbackErr.message);
+        }
       }
       
       const response = await api.post('/chatbot/chat', {

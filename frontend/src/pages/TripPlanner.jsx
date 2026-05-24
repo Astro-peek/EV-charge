@@ -53,6 +53,12 @@ const TripPlanner = () => {
 
   useEffect(() => {
     // 1. Get User Location
+    const geoOptions = {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0,
+    };
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -60,8 +66,26 @@ const TripPlanner = () => {
           setUserLocation(coords);
           setFrom("My Current Location");
         },
-        (err) => console.warn("Geolocation denied", err)
+        (err) => {
+          console.warn("Geolocation error:", err.message);
+          // Fallback: try low-accuracy
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              const coords = [pos.coords.latitude, pos.coords.longitude];
+              setUserLocation(coords);
+              setFrom("My Current Location");
+            },
+            () => {
+              // Final fallback: India centroid
+              setUserLocation([20.5937, 78.9629]);
+            },
+            { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
+          );
+        },
+        geoOptions
       );
+    } else {
+      setUserLocation([20.5937, 78.9629]);
     }
 
     if (location.state) {
