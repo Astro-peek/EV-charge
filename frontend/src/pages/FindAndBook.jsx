@@ -50,6 +50,8 @@ const FindAndBook = () => {
   const [occupancy, setOccupancy] = useState({}); // stationId -> count
   const [mapInstance, setMapInstance] = useState(null);
   const [viewMode, setViewMode] = useState("list"); // 'list' or 'map' on mobile
+  const [locationStatus, setLocationStatus] = useState("loading"); // loading | success | denied | unavailable
+  const watchIdRef = useRef(null);
 
   // Smart VehicleID Integration States
   const [smartVehicle, setSmartVehicle] = useState(null);
@@ -90,37 +92,66 @@ const FindAndBook = () => {
     }
   };
 
-  useEffect(() => {
-    const geoOptions = {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0,
-    };
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setUserLocation([pos.coords.latitude, pos.coords.longitude]);
-        },
-        (err) => {
-          console.warn("Geolocation error:", err.message);
-          // Fallback: try low-accuracy as last resort
-          navigator.geolocation.getCurrentPosition(
-            (pos) => setUserLocation([pos.coords.latitude, pos.coords.longitude]),
-            () => {
-              // Final fallback: use India centroid so map is still useful
-              setUserLocation([20.5937, 78.9629]);
-            },
-            { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
-          );
-        },
-        geoOptions
-      );
-    } else {
-      // Browser doesn't support geolocation
-      setUserLocation([20.5937, 78.9629]);
+  const fetchLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationStatus("unavailable");
+      setUserLocation([20.5937, 78.9629]); // India centroid fallback
+      return;
     }
 
+    setLocationStatus("loading");
+
+    // Clear any existing watch
+    if (watchIdRef.current !== null) {
+      navigator.geolocation.clearWatch(watchIdRef.current);
+    }
+
+    // Use watchPosition — it keeps trying for a better fix automatically
+    watchIdRef.current = navigator.geolocation.watchPosition(
+      (pos) => {
+        const coords = [pos.coords.latitude, pos.coords.longitude];
+        setUserLocation(coords);
+        setLocationStatus("success");
+        // Stop watching after we get a good fix (accuracy < 500m)
+        if (pos.coords.accuracy < 500 && watchIdRef.current !== null) {
+          navigator.geolocation.clearWatch(watchIdRef.current);
+          watchIdRef.current = null;
+        }
+      },
+      (err) => {
+        console.warn("Geolocation error in FindAndBook:", err.code, err.message);
+        if (err.code === 1) {
+          // PERMISSION_DENIED
+          setLocationStatus("denied");
+        } else {
+          setLocationStatus("unavailable");
+        }
+        // Use India centroid so map still renders usefully
+        setUserLocation((prev) => prev || [20.5937, 78.9629]);
+        if (watchIdRef.current !== null) {
+          navigator.geolocation.clearWatch(watchIdRef.current);
+          watchIdRef.current = null;
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0,
+      }
+    );
+  };
+
+  useEffect(() => {
+    fetchLocation();
+    return () => {
+      // Cleanup watch on unmount
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     const fetchStations = async () => {
       try {
         const res = await stationService.getStations();
@@ -864,19 +895,43 @@ const FindAndBook = () => {
         <div className="absolute top-24 right-6 flex flex-col gap-2 z-20">
            <button 
              onClick={() => {
+               fetchLocation();
                if (userLocation && mapInstance) {
                  mapInstance.flyTo(userLocation, 14, { duration: 1.5 });
                }
              }} 
              className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-gray-600 hover:text-green-600 transition-colors"
            >
-              <Navigation size={20} />
+              <Navigation size={20} className={locationStatus === "loading" ? "animate-pulse text-green-500" : ""} />
            </button>
            <button 
              className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-gray-600 hover:text-green-600 transition-colors"
            >
               <Filter size={20} />
            </button>
+        </div>
+
+        {/* Location status badge + retry button */}
+        <div className="absolute bottom-6 left-6 z-[1000] flex items-center gap-2">
+          {locationStatus === "denied" && (
+            <button
+              onClick={fetchLocation}
+              className="flex items-center gap-1.5 bg-white text-xs font-bold text-red-500 border border-red-200 px-3 py-1.5 rounded-xl shadow-md hover:bg-red-50 transition"
+            >
+              🔒 Location blocked — Tap to retry
+            </button>
+          )}
+          {locationStatus === "loading" && (
+            <div className="flex items-center gap-1.5 bg-white text-xs font-bold text-green-600 border border-green-100 px-3 py-1.5 rounded-xl shadow-md">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              Locating you...
+            </div>
+          )}
+          {locationStatus === "success" && (
+            <div className="flex items-center gap-1.5 bg-white text-xs font-bold text-green-600 border border-green-100 px-3 py-1.5 rounded-xl shadow-md">
+              📍 Live location
+            </div>
+          )}
         </div>
       </div>
 

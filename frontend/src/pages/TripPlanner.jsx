@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin,
@@ -50,44 +50,70 @@ const TripPlanner = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [rerouteAlert, setRerouteAlert] = useState(null);
   const [endCoords, setEndCoords] = useState(null);
+  const [locationStatus, setLocationStatus] = useState("loading"); // loading | success | denied | unavailable
+  const watchIdRef = useRef(null);
 
-  useEffect(() => {
-    // 1. Get User Location
-    const geoOptions = {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0,
-    };
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const coords = [pos.coords.latitude, pos.coords.longitude];
-          setUserLocation(coords);
-          setFrom("My Current Location");
-        },
-        (err) => {
-          console.warn("Geolocation error:", err.message);
-          // Fallback: try low-accuracy
-          navigator.geolocation.getCurrentPosition(
-            (pos) => {
-              const coords = [pos.coords.latitude, pos.coords.longitude];
-              setUserLocation(coords);
-              setFrom("My Current Location");
-            },
-            () => {
-              // Final fallback: India centroid
-              setUserLocation([20.5937, 78.9629]);
-            },
-            { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
-          );
-        },
-        geoOptions
-      );
-    } else {
-      setUserLocation([20.5937, 78.9629]);
+  const fetchLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationStatus("unavailable");
+      setUserLocation([20.5937, 78.9629]); // India centroid fallback
+      return;
     }
 
+    setLocationStatus("loading");
+
+    // Clear any existing watch
+    if (watchIdRef.current !== null) {
+      navigator.geolocation.clearWatch(watchIdRef.current);
+    }
+
+    // Use watchPosition — it keeps trying for a better fix automatically
+    watchIdRef.current = navigator.geolocation.watchPosition(
+      (pos) => {
+        const coords = [pos.coords.latitude, pos.coords.longitude];
+        setUserLocation(coords);
+        setLocationStatus("success");
+        setFrom((prev) => prev === "" || prev === "My Current Location" ? "My Current Location" : prev);
+        // Stop watching after we get a good fix (accuracy < 500m)
+        if (pos.coords.accuracy < 500 && watchIdRef.current !== null) {
+          navigator.geolocation.clearWatch(watchIdRef.current);
+          watchIdRef.current = null;
+        }
+      },
+      (err) => {
+        console.warn("Geolocation error in TripPlanner:", err.code, err.message);
+        if (err.code === 1) {
+          // PERMISSION_DENIED
+          setLocationStatus("denied");
+        } else {
+          setLocationStatus("unavailable");
+        }
+        // Use India centroid so map still renders usefully
+        setUserLocation((prev) => prev || [20.5937, 78.9629]);
+        if (watchIdRef.current !== null) {
+          navigator.geolocation.clearWatch(watchIdRef.current);
+          watchIdRef.current = null;
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0,
+      }
+    );
+  };
+
+  useEffect(() => {
+    fetchLocation();
+    return () => {
+      // Cleanup watch on unmount
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     if (location.state) {
       setFrom(location.state.from || "");
       setTo(location.state.to || "");
@@ -627,12 +653,32 @@ const TripPlanner = () => {
               animate={{ opacity: 1, x: 0 }}
               className="bg-white rounded-[32px] overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-100 relative h-[380px] sm:h-[480px] lg:h-[600px]"
             >
-              <div className="absolute top-6 left-6 z-[1000] flex gap-2">
-                <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-slate-100 flex items-center gap-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs font-black text-slate-900 uppercase">Live Map</span>
-                </div>
-              </div>
+               <div className="absolute top-6 left-6 z-[1000] flex flex-wrap gap-2">
+                 <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-slate-100 flex items-center gap-2">
+                   <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                   <span className="text-xs font-black text-slate-900 uppercase">Live Map</span>
+                 </div>
+
+                 {locationStatus === "denied" && (
+                   <button
+                     onClick={fetchLocation}
+                     className="flex items-center gap-1.5 bg-white/90 backdrop-blur-md text-xs font-bold text-red-500 border border-red-200 px-3 py-2 rounded-2xl shadow-lg hover:bg-red-50 transition"
+                   >
+                     🔒 Location blocked — Tap to retry
+                   </button>
+                 )}
+                 {locationStatus === "loading" && (
+                   <div className="flex items-center gap-1.5 bg-white/90 backdrop-blur-md text-xs font-bold text-green-600 border border-green-100 px-3 py-2 rounded-2xl shadow-lg">
+                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                     Locating...
+                   </div>
+                 )}
+                 {locationStatus === "success" && (
+                   <div className="flex items-center gap-1.5 bg-white/90 backdrop-blur-md text-xs font-bold text-green-600 border border-green-100 px-3 py-2 rounded-2xl shadow-lg">
+                     📍 Live location
+                   </div>
+                 )}
+               </div>
 
               <MapContainer
                 center={userLocation || [20.5937, 78.9629]}
